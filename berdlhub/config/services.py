@@ -20,7 +20,7 @@ def configure_services(c):
                     "-m",
                     "jupyterhub_idle_culler",
                     f"--timeout={timeout}",
-                    "--cull-every=60",  # Check every 10 minutes
+                    "--cull-every=60",  # Check every 1 minute
                 ],
             }
         )
