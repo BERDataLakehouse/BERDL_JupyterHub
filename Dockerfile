@@ -14,9 +14,8 @@ ENV JUPYTERHUB_TEMPLATES_DIR=${BERDL_DIR}/auth/templates
 
 # --- Build Steps ---
 WORKDIR ${HUB_DIR}
-COPY pyproject.toml .
-RUN pip install uv
-RUN uv sync --locked --inexact --no-dev --system
+COPY pyproject.toml uv.lock .python-version ./
+RUN pip install uv && uv sync --locked --inexact --no-dev
 
 COPY ./berdlhub/ ${BERDL_DIR}/
 
