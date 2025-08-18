@@ -11,7 +11,7 @@ from berdlhub.config.validators import validate_environment
 sys.path.insert(0, os.path.dirname(__file__))
 
 # Get the config object
-c = get_config()  # Provided by JupyterHub at runtime; not defined in this file.
+c = get_config()  # noqa: F821 Provided by JupyterHub at runtime; not defined in this file.
 
 # Validate environment variables first
 

@@ -17,4 +17,3 @@ def configure_hub(c):
     c.JupyterHub.template_vars = {
         "kbase_origin": os.environ["KBASE_ORIGIN"],
     }
-
