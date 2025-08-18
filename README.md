@@ -22,17 +22,18 @@ The container is configured at runtime using the following environment variables
 
 ### Required Variables
 
-| Variable                                | Description                                                                      |
-|-----------------------------------------|----------------------------------------------------------------------------------|
-| `JUPYTERHUB_COOKIE_SECRET_64_HEX_CHARS` | A 64-character hex string for securing user session cookies.                     |
-| `JUPYTERHUB_TEMPLATES_DIR`              | The path to custom HTML templates for login.                                     |
-| `KBASE_ORIGIN`                          | The KBase service URL used by the auth login html.                               |
-| `KBASE_AUTH_URL`                        | The URL for the KBase authentication service.                                    |
-| `CDM_TASK_SERVICE_URL`                  | The URL for the CTS service.                                                     |
-| `GOVERNANCE_API_URL`                    | The URL for the Governance API.                                                  |
-| `MINIO_ENDPOINT_URL`                    | The endpoint URL for the MinIO object storage service.                           |
-| `SPARK_CLUSTER_MANAGER_API_URL`         | The URL for the Spark Cluster Manager API.                                       |
-| `BERDL_HIVE_METASTORE_URI`              | The URI for the Hive Metastore service.                                          |
+| Variable                                | Description                                                 |
+|-----------------------------------------|-------------------------------------------------------------|
+| `JUPYTERHUB_COOKIE_SECRET_64_HEX_CHARS` | A 64-character hex string for securing user session cookies. |
+| `JUPYTERHUB_TEMPLATES_DIR`              | The path to custom HTML templates for login.                |
+| `KBASE_ORIGIN`                          | The KBase service URL used by the auth login html.          |
+| `KBASE_AUTH_URL`                        | The URL for the KBase authentication service.               |
+| `CDM_TASK_SERVICE_URL`                  | The URL for the CTS service.                                |
+| `GOVERNANCE_API_URL`                    | The URL for the Governance API.                             |
+| `MINIO_ENDPOINT_URL`                    | The endpoint URL for the MinIO object storage service.      |
+| `SPARK_CLUSTER_MANAGER_API_URL`         | The URL for the Spark Cluster Manager API.                  |
+| `BERDL_HIVE_METASTORE_URI`              | The URI for the Hive Metastore service.                     |
+| `BERDL_NOTEBOOK_IMAGE_TAG`              | The BERDL Compatible Notebook tag                           |
 
 ### Optional Variables
 
@@ -42,7 +43,6 @@ The container is configured at runtime using the following environment variables
 | `JUPYTERHUB_CRYPT_KEY`                  | _(none)_                                | A 32-byte key for the authenticator to encrypt auth state.                       |
 | `JUPYTERHUB_IDLE_TIMEOUT_SECONDS`       | `3600`                                  | Seconds of inactivity before a user's server is automatically shut down.         |
 | `NODE_SELECTOR_HOSTNAME`                | _(none)_                                | If set, forces user notebook pods to be scheduled on a specific Kubernetes node. |
-| `BERDL_NOTEBOOK_IMAGE_TAG`              | `ghcr.io/bio-boris/berdl_notebook:pr-1` | The tag of the BERDL notebook image to use for user servers.                     |
 | `MINIO_SECURE_FLAG`                     | `True`                                  | Whether to use HTTPS for MinIO connections.                                      |
 | `JUPYTERHUB_DEBUG`                      | `False`                                 | Enable debug mode for JupyterHub.                                                |
 | `JUPYTERHUB_LOG_LEVEL`                  | `INFO`                                  | Set JupyterHub log level (DEBUG, INFO, WARN, ERROR).                             |
