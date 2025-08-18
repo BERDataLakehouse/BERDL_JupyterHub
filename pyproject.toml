@@ -26,7 +26,6 @@ exclude = [
     ".vscode",
     "__pypackages__",
     "_build",
-    ".venv",
     "venv",
 ]
 
