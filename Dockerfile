@@ -17,6 +17,8 @@ WORKDIR ${HUB_DIR}
 COPY pyproject.toml uv.lock .python-version ./
 ENV UV_SYSTEM_PYTHON=1
 RUN pip install uv && uv sync --locked --inexact --no-dev
+RUN uv pip install --system .
+
 COPY ./berdlhub/ ${BERDL_DIR}/
 
 # This default directory must be mounted in order to preserve the sqlite and pid files
