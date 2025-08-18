@@ -53,14 +53,6 @@ def validate_environment():
         logging.error("\n".join(missing))
         sys.exit(1)
 
-    logging.info("Environment validation successful!")
-    logging.info("\nOptional variables status:")
-    for var, description in optional_vars.items():
-        status = "✓ Set" if var in os.environ else "✗ Not set"
-        logger.error("ERROR: Missing required environment variables:")
-        logger.error("\n".join(missing))
-        sys.exit(1)
-
     logger.info("Environment validation successful!")
     logger.info("\nOptional variables status:")
     for var, description in optional_vars.items():
