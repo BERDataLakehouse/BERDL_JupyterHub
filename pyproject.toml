@@ -1,0 +1,78 @@
+[project]
+name = "berdl-jupyterhub"
+version = "0.0.1"
+description = "BER Data Lake JupyterHub Environment"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "aiohttp==3.12.13",
+    "cdm-spark-manager-client",
+    "fasteners==0.20",
+    "httpx==0.28.1",
+    "json5==0.12.1",
+    "jupyterhub-idle-culler==1.4.0",
+    "jupyterhub-kubespawner==7.0.0",
+    "kubernetes>=33.1.0",
+]
+
+
+[tool.ruff]
+
+exclude = [
+    ".git",
+    ".ipynb_checkpoints",
+    ".ruff_cache",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "venv",
+]
+
+# Same as Black.
+line-length = 120
+indent-width = 4
+
+
+target-version = "py310"
+
+[tool.ruff.lint]
+
+select = ["E", "F", "W"]
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+# Enable auto-formatting of code examples in docstrings. Markdown,
+# reStructuredText code/literal blocks and doctests are all supported.
+#
+# This is currently disabled by default, but it is planned for this
+# to be opt-out in the future.
+docstring-code-format = false
+
+# Set the line length limit used when formatting code snippets in
+# docstrings.
+#
+# This only has an effect when the `docstring-code-format` setting is
+# enabled.
+docstring-code-line-length = "dynamic"
+
+[tool.uv.sources]
+cdm-spark-manager-client = { git = "https://github.com/kbase/cdm-kube-spark-manager-client.git", rev = "0.0.1" }
