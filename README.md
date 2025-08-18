@@ -54,7 +54,7 @@ The container is configured at runtime using the following environment variables
 | `DEFAULT_MASTER_MEMORY`                 | `2g`                                    | Default master memory for Spark clusters.                                        |
 | `DEFAULT_WORKER_COUNT`                  | `2`                                     | Default number of worker nodes for Spark clusters.                               |
 | `DEFAULT_WORKER_CORES`                  | `1`                                     | Default worker cores for Spark clusters.                                         |
-| `DEFAULT_WORKER_MEMORY`                 | `2g`                                    | Default worker memory for Spark clusters.                                        |
+| `DEFAULT_WORKER_MEMORY`                 | `10GiB`                                  | Default worker memory for Spark clusters.                                         |
 
 ---
 
