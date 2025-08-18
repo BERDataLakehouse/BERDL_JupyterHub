@@ -18,4 +18,3 @@ def configure_hub(c):
         "kbase_origin": os.environ["KBASE_ORIGIN"],
     }
 
-    # Server management
