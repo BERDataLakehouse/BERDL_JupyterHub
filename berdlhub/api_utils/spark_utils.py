@@ -192,20 +192,11 @@ class SparkClusterManager:
             if hasattr(response, "content") and response.content:
                 error_message += f": {response.content}"
 
-            if spawner:
-                # Log error but don't raise when called from spawner
-                self.logger.error(f"Error deleting Spark cluster for user {username}: {error_message}")
-            else:
-                # Raise error when called directly
-                await self._raise_api_error(response, "Cluster deletion")
+            self.logger.error(f"Error deleting Spark cluster for user {username}: {error_message}")
+
 
         except Exception as e:
-            if spawner:
-                # Log error but don't raise when called from spawner
-                self.logger.error(f"Error deleting Spark cluster for user {username}: {str(e)}")
-            else:
-                # Re-raise when called directly
-                raise
+            self.logger.error(f"Error deleting Spark cluster for user {username}: {str(e)}")
 
     async def start_spark_cluster(self, spawner) -> str:
         """
