@@ -57,4 +57,4 @@ def validate_environment():
     logging.info("\nOptional variables status:")
     for var, description in optional_vars.items():
         status = "✓ Set" if var in os.environ else "✗ Not set"
-        logging.warning(f"  {status}: {var} ({description})")
+        logging.info(f"  {status}: {var} ({description})")
