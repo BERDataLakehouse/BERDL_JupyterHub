@@ -23,7 +23,7 @@ class ClusterDefaults:
     worker_cores: int = 1
     worker_memory: str = "10GiB"
     master_cores: int = 1
-    master_memory: str = "10GiB"
+    master_memory: str = "2GiB"
 
     @classmethod
     def from_environment(cls) -> "ClusterDefaults":
