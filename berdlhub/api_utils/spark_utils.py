@@ -64,7 +64,7 @@ class SparkClusterManager:
             api_url: Optional API URL, defaults to SPARK_CLUSTER_MANAGER_API_URL env var
 
         Raises:
-            KeyError: If SPARK_CLUSTER_MANAGER_API_URL is not set and api_url not provided
+            KeyError: If the SPARK_CLUSTER_MANAGER_API_URL is not set and an api_url is not provided
         """
         self.kbase_auth_token = kbase_auth_token
         self.api_url = api_url or os.environ["SPARK_CLUSTER_MANAGER_API_URL"]
@@ -166,8 +166,7 @@ class SparkClusterManager:
         It can be used both programmatically and with JupyterHub spawners.
 
         Args:
-            spawner: Optional JupyterHub spawner instance for integration.
-                     If provided, will log using spawner's logger.
+            spawner: JupyterHub spawner instance for integration.
 
         Returns:
             ClusterDeleteResponse: Deletion response if available
