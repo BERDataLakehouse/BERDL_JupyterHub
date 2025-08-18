@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 def configure_debug(c):
     """Configure debug settings based on environment."""
 
-    debug_enabled = os.environ.get("JUPYTERHUB_DEBUG", "true").lower() == "true"
+    debug_enabled = os.environ.get("JUPYTERHUB_DEBUG", "false").lower() == "true"
 
     if debug_enabled:
         c.KubeSpawner.debug = True
