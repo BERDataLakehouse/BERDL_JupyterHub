@@ -1,7 +1,3 @@
-"""
-CDM Spark Cluster Manager API Client Wrapper - Async Version
-"""
-
 import logging
 import os
 from dataclasses import dataclass
