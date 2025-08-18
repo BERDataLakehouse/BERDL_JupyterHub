@@ -23,6 +23,7 @@ def validate_environment():
         "MINIO_ENDPOINT_URL": "MinIO endpoint URL for the governance service to inject into the users env",
         "SPARK_CLUSTER_MANAGER_API_URL": "Spark cluster manager API",
         "BERDL_HIVE_METASTORE_URI": "Hive metastore URI",
+        "BERDL_NOTEBOOK_IMAGE_TAG": "Docker image tag for the notebook server",
     }
 
     optional_vars = {
