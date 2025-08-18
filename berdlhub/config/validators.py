@@ -37,7 +37,7 @@ def validate_environment():
         "MINIO_SECURE_FLAG": "Flag indicating if MinIO uses HTTPS to inject into the users env. Defaults to True",
         "ENABLE_IDLE_CULLER": "Enable idle culler for JupyterHub. Defaults to True",
         "JUPYTERHUB_IDLE_TIMEOUT_SECONDS": "Idle Culler timeout seconds. Defaults to 3600 seconds (1 hour)",
-        "JUPYTERHUB_MEM_LIMIT_GB": "Memory limit in GB for JupyterHub users. Defaults to XGB",
+        "JUPYTERHUB_MEM_LIMIT_GB": "Memory limit in GB for JupyterHub users. Defaults to 4GB",
         "JUPYTERHUB_MEM_GUARANTEE_GB": "Memory guarantee in GB for JupyterHub users. Defaults to YGB",
         "JUPYTERHUB_CPU_LIMIT": "CPU limit for JupyterHub users. Defaults to Z cores",
     }
