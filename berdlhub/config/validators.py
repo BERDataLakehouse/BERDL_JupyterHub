@@ -51,7 +51,8 @@ def validate_environment():
 
     if missing:
         logging.error("ERROR: Missing required environment variables:")
-        logging.error("\n".join(missing))
+        logger.error("ERROR: Missing required environment variables:")
+        logger.error("\n".join(missing))
         sys.exit(1)
 
     logger.info("Environment validation successful!")
