@@ -51,7 +51,7 @@ The container is configured at runtime using the following environment variables
 | `JUPYTERHUB_MEM_GUARANTEE_GB`           | `2`                                     | Memory guarantee in GB for JupyterHub user containers.                           |
 | `JUPYTERHUB_CPU_LIMIT`                  | `2`                                     | CPU limit (cores) for JupyterHub user containers.                                |
 | `DEFAULT_MASTER_CORES`                  | `1`                                     | Default master cores for Spark clusters.                                         |
-| `DEFAULT_MASTER_MEMORY`                 | `2g`                                    | Default master memory for Spark clusters.                                        |
+| `DEFAULT_MASTER_MEMORY`                 | `10GiB`                                 | Default master memory for Spark clusters.                                         |
 | `DEFAULT_WORKER_COUNT`                  | `2`                                     | Default number of worker nodes for Spark clusters.                               |
 | `DEFAULT_WORKER_CORES`                  | `1`                                     | Default worker cores for Spark clusters.                                         |
 | `DEFAULT_WORKER_MEMORY`                 | `10GiB`                                  | Default worker memory for Spark clusters.                                         |
