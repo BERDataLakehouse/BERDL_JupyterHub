@@ -158,7 +158,7 @@ class SparkClusterManager:
 
         await self._raise_api_error(response, "Cluster creation")
 
-    async def stop_spark_cluster(self, spawner: Optional[Any] = None) -> Optional[ClusterDeleteResponse]:
+    async def stop_spark_cluster(self, spawner) -> Optional[ClusterDeleteResponse]:
         """
         Stop/delete the Spark cluster for the authenticated user.
 
