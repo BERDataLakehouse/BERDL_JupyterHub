@@ -37,24 +37,24 @@ The container is configured at runtime using the following environment variables
 
 ### Optional Variables
 
-| Variable                                | Default Value                           | Description                                                                      |
-|-----------------------------------------|-----------------------------------------|----------------------------------------------------------------------------------|
-| `AUTH_FULL_ADMIN_ROLES`                 | _(empty string)_                        | A comma-separated list of KBase roles to be granted full admin rights.           |
-| `JUPYTERHUB_CRYPT_KEY`                  | _(none)_                                | A 32-byte key for the authenticator to encrypt auth state.                       |
-| `JUPYTERHUB_IDLE_TIMEOUT_SECONDS`       | `3600`                                  | Seconds of inactivity before a user's server is automatically shut down.         |
-| `NODE_SELECTOR_HOSTNAME`                | _(none)_                                | If set, forces user notebook pods to be scheduled on a specific Kubernetes node. |
-| `MINIO_SECURE_FLAG`                     | `True`                                  | Whether to use HTTPS for MinIO connections.                                      |
-| `JUPYTERHUB_DEBUG`                      | `False`                                 | Enable debug mode for JupyterHub.                                                |
-| `JUPYTERHUB_LOG_LEVEL`                  | `INFO`                                  | Set JupyterHub log level (DEBUG, INFO, WARN, ERROR).                             |
-| `ENABLE_IDLE_CULLER`                    | `True`                                  | Enable idle culler for JupyterHub.                                               |
-| `JUPYTERHUB_MEM_LIMIT_GB`               | `4`                                     | Memory limit in GB for JupyterHub user containers.                               |
-| `JUPYTERHUB_MEM_GUARANTEE_GB`           | `2`                                     | Memory guarantee in GB for JupyterHub user containers.                           |
-| `JUPYTERHUB_CPU_LIMIT`                  | `2`                                     | CPU limit (cores) for JupyterHub user containers.                                |
-| `DEFAULT_MASTER_CORES`                  | `1`                                     | Default master cores for Spark clusters.                                         |
-| `DEFAULT_MASTER_MEMORY`                 | `10GiB`                                 | Default master memory for Spark clusters.                                         |
-| `DEFAULT_WORKER_COUNT`                  | `2`                                     | Default number of worker nodes for Spark clusters.                               |
-| `DEFAULT_WORKER_CORES`                  | `1`                                     | Default worker cores for Spark clusters.                                         |
-| `DEFAULT_WORKER_MEMORY`                 | `10GiB`                                  | Default worker memory for Spark clusters.                                         |
+| Variable                                | Default Value    | Description                                                                      |
+|-----------------------------------------|------------------|----------------------------------------------------------------------------------|
+| `AUTH_FULL_ADMIN_ROLES`                 | _(empty string)_ | A comma-separated list of KBase roles to be granted full admin rights.           |
+| `JUPYTERHUB_CRYPT_KEY`                  | _(none)_         | A 32-byte key for the authenticator to encrypt auth state.                       |
+| `JUPYTERHUB_IDLE_TIMEOUT_SECONDS`       | `3600`           | Seconds of inactivity before a user's server is automatically shut down.         |
+| `NODE_SELECTOR_HOSTNAME`                | _(none)_         | If set, forces user notebook pods to be scheduled on a specific Kubernetes node. |
+| `MINIO_SECURE_FLAG`                     | `True`           | Whether to use HTTPS for MinIO connections.                                      |
+| `JUPYTERHUB_DEBUG`                      | `False`          | Enable debug mode for JupyterHub.                                                |
+| `JUPYTERHUB_LOG_LEVEL`                  | `INFO`           | Set JupyterHub log level (DEBUG, INFO, WARN, ERROR).                             |
+| `ENABLE_IDLE_CULLER`                    | `True`           | Enable idle culler for JupyterHub.                                               |
+| `JUPYTERHUB_MEM_LIMIT_GB`               | `4`              | Memory limit in GB for JupyterHub user containers.                               |
+| `JUPYTERHUB_MEM_GUARANTEE_GB`           | `2`              | Memory guarantee in GB for JupyterHub user containers.                           |
+| `JUPYTERHUB_CPU_LIMIT`                  | `2`              | CPU limit (cores) for JupyterHub user containers.                                |
+| `DEFAULT_MASTER_CORES`                  | `1`              | Default master cores for Spark clusters.                                         |
+| `DEFAULT_MASTER_MEMORY`                 | `2GiB`           | Default master memory for Spark clusters.                                         |
+| `DEFAULT_WORKER_COUNT`                  | `2`              | Default number of worker nodes for Spark clusters.                               |
+| `DEFAULT_WORKER_CORES`                  | `1`              | Default worker cores for Spark clusters.                                         |
+| `DEFAULT_WORKER_MEMORY`                 | `10GiB`          | Default worker memory for Spark clusters.                                         |
 
 ---
 

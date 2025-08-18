@@ -37,7 +37,7 @@ class ClusterDefaults:
             worker_cores=int(os.environ.get("DEFAULT_WORKER_CORES", 1)),
             worker_memory=os.environ.get("DEFAULT_WORKER_MEMORY", "10GiB"),
             master_cores=int(os.environ.get("DEFAULT_MASTER_CORES", 1)),
-            master_memory=os.environ.get("DEFAULT_MASTER_MEMORY", "10GiB"),
+            master_memory=os.environ.get("DEFAULT_MASTER_MEMORY", "2GiB"),
         )
 
 
