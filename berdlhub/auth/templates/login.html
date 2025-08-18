@@ -83,10 +83,10 @@
       form.find('.feedback-widget>*').toggleClass('fa-pulse');
     });
 
-    const enviromentOrigin = "{{ kbase_origin }}"
+    const environmentOrigin = "{{ kbase_origin }}"
 
     $('#login_not_ok').click(function () {
-      window.location.href = enviromentOrigin + '/login?nextRequest=%22/cdm/redirect%22';
+      window.location.href = environmentOrigin + '/login?nextRequest=%22/cdm/redirect%22';
     })
 
     // Initial state update
@@ -124,7 +124,7 @@
        const tokenCookie = getCookie('kbase_session') ?? getCookie('kbase_session_backup');
 
       if (!tokenCookie) return Promise.resolve(null);
-      return fetch(enviromentOrigin + '/services/auth/api/V2/me', {
+      return fetch(environmentOrigin + '/services/auth/api/V2/me', {
         headers: {
           Authorization: tokenCookie,
         },
