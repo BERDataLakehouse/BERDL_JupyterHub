@@ -19,4 +19,3 @@ def configure_hub(c):
     }
 
     # Server management
-    # c.JupyterHub.cleanup_servers = False  # Don't delete servers on restart
