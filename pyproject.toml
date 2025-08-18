@@ -13,6 +13,7 @@ dependencies = [
     "jupyterhub-idle-culler==1.4.0",
     "jupyterhub-kubespawner==7.0.0",
     "kubernetes>=33.1.0",
+
 ]
 
 
@@ -76,3 +77,9 @@ docstring-code-line-length = "dynamic"
 
 [tool.uv.sources]
 cdm-spark-manager-client = { git = "https://github.com/kbase/cdm-kube-spark-manager-client.git", rev = "0.0.1" }
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+    "pytest-asyncio>=1.1.0",
+]
