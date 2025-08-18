@@ -44,7 +44,7 @@ async def _check_error(r):
             j = await r.json()
         except Exception:
             err = "Non-JSON response from KBase auth server, status code: " + str(r.status)
-            logging.getLogger(__name__).info("%s, response:\n%s", err, r.text)
+            logging.getLogger(__name__).info("%s, response:\n%s", err, await r.text())
             raise IOError(err)
         # assume that if we get json then at least this is the auth server and we can
         # rely on the error structure.
