@@ -3,7 +3,7 @@ name = "berdl-jupyterhub"
 version = "0.0.1"
 description = "BER Data Lake JupyterHub Environment"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.10"
 dependencies = [
     "aiohttp==3.12.13",
     "cdm-spark-manager-client",
