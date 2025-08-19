@@ -1,0 +1,21 @@
+kind: ConfigMap
+metadata:
+   name: jupyterhub-config
+   namespace: jupyterhub-dev
+apiVersion: v1
+data:
+  BERDL_HIVE_METASTORE_URI: http://hive-metastore:9083
+  BERDL_NOTEBOOK_IMAGE_TAG: ghcr.io/bio-boris/berdl_notebook:main
+  CDM_TASK_SERVICE_URL: https://berdl.kbase.us/apis/cts
+  GOVERNANCE_API_URL: http://minio-service:8000
+  JUPYTERHUB_COOKIE_SECRET_64_HEX_CHARS: d1a3f8a56c4b27e939f81bc6dfcd3e81913a2b79e5f4674a6bd37f5e4a29de38
+  JUPYTERHUB_CRYPT_KEY: 7b40d6e5c09f34a721e8a9f05bfc6c2e3a41d8f97c63b28eab249fd89c1e0737
+  JUPYTERHUB_IDLE_TIMEOUT_SECONDS: '3600'
+  KBASE_AUTH_URL: https://narrative.kbase.us/services/auth/
+  KBASE_ORIGIN: https://narrative.kbase.us
+  MINIO_ENDPOINT_URL: https://minio.berdl.kbase.us
+  MINIO_SECURE_FLAG: 'True'
+  NODE_SELECTOR_HOSTNAME: lima-rancher-desktop
+  SPARK_CLUSTER_MANAGER_API_URL: http://sparkmanagerapi:8000
+
+

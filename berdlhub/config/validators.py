@@ -41,6 +41,7 @@ def validate_environment():
         "JUPYTERHUB_MEM_LIMIT_GB": "Memory limit in GB for JupyterHub users. Defaults to 4GB",
         "JUPYTERHUB_MEM_GUARANTEE_GB": "Memory guarantee in GB for JupyterHub users. Defaults to 2GB",
         "JUPYTERHUB_CPU_LIMIT": "CPU limit for JupyterHub users. Defaults to 2 cores",
+        "BERDL_SKIP_SPAWN_HOOKS": "Skip pre and post spawn hooks. Defaults to False",
     }
 
     # Check required variables
