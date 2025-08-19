@@ -26,7 +26,7 @@ async def pre_spawn_hook(spawner):
     """
     spawner.log.debug("Pre-spawn hook called for user %s", spawner.user.name)
     kb_auth_token = await _get_auth_token(spawner)
-    if os.environ.get("BERDL_SKIP_SPAWN_HOOKS").lower() == "true":
+    if os.environ["BERDL_SKIP_SPAWN_HOOKS"].lower() == "true":
         spawner.log.info("Skipping pre-spawn hook due to BERDL_SKIP_SPAWN_HOOKS environment variable.")
         return
 
@@ -40,7 +40,7 @@ async def post_stop_hook(spawner):
     """
     kb_auth_token = await _get_auth_token(spawner)
     spawner.log.debug("Post-stop hook called for user %s", spawner.user.name)
-    if os.environ.get("BERDL_SKIP_SPAWN_HOOKS").lower() == "true":
+    if os.environ["BERDL_SKIP_SPAWN_HOOKS"].lower() == "true":
         spawner.log.info("Skipping post-stop hook due to BERDL_SKIP_SPAWN_HOOKS environment variable.")
         return
     await SparkClusterManager(kb_auth_token).stop_spark_cluster(spawner)
