@@ -14,7 +14,7 @@ Use the provided local_dev directory to deploy the JupyterHub instance. This dir
 * Modify the image tag to the tag of the BERDL JupyterHub image you want to use, you can build it locally or open a PR, and use the ghcr.io created images or a locally built image.
 
 
-# [ingress.yaml](hub.yaml)
+# [ingress.yaml](ingress.yaml)
 * Ensure your hosts file matches the ingress host such as
 ```aiignore
 127.0.0.1 cdmhub.ci.kbase.us
