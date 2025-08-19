@@ -16,7 +16,6 @@ Use the provided local_dev directory to deploy the JupyterHub instance. This dir
 
 # [ingress.yaml](ingress.yaml)
 * Ensure your hosts file matches the ingress host such as
-```aiignore
 127.0.0.1 cdmhub.ci.kbase.us
 127.0.0.1 hub.berdl.kbase.us
 ```
