@@ -13,7 +13,7 @@ kubectl apply -k local_dev/
 ```
 
 * Use the provided local_dev directory to deploy the JupyterHub instance. This directory contains all necessary Kubernetes manifests and configurations.
-* You can also you can copy them into the rancher2 UI to deploy them. Run `kustomize build . | pbcopy` to copy them to your clipboard.
+* You can also copy them into the rancher2 UI to deploy them. Run `kustomize build . | pbcopy` to copy them to your clipboard.
 
 ## Configuration Files
 
