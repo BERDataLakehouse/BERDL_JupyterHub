@@ -17,5 +17,6 @@ data:
   MINIO_SECURE_FLAG: 'True'
   NODE_SELECTOR_HOSTNAME: lima-rancher-desktop
   SPARK_CLUSTER_MANAGER_API_URL: http://sparkmanagerapi:8000
+  BERDL_SKIP_SPAWN_HOOKS: 'True'
 
 

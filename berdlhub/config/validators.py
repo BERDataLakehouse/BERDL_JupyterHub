@@ -24,6 +24,7 @@ def validate_environment():
         "SPARK_CLUSTER_MANAGER_API_URL": "Spark cluster manager API",
         "BERDL_HIVE_METASTORE_URI": "Hive metastore URI",
         "BERDL_NOTEBOOK_IMAGE_TAG": "Docker image tag for the notebook server",
+        "BERDL_SKIP_SPAWN_HOOKS": "Skip pre and post spawn hooks",
     }
 
     optional_vars = {
@@ -41,7 +42,6 @@ def validate_environment():
         "JUPYTERHUB_MEM_LIMIT_GB": "Memory limit in GB for JupyterHub users. Defaults to 4GB",
         "JUPYTERHUB_MEM_GUARANTEE_GB": "Memory guarantee in GB for JupyterHub users. Defaults to 2GB",
         "JUPYTERHUB_CPU_LIMIT": "CPU limit for JupyterHub users. Defaults to 2 cores",
-        "BERDL_SKIP_SPAWN_HOOKS": "Skip pre and post spawn hooks. Defaults to False",
     }
 
     # Check required variables
