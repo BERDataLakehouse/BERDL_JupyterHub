@@ -64,7 +64,7 @@ The container is configured at runtime using the following environment variables
 * Link to Read the docs
 
 # Dev Guide
-* See the [localdev/README.md](local_dev/README.md) file for guidelines
+* See the [local_dev/README.md](local_dev/README.md) file for guidelines
 
 
 # Future Work and Known Issues
