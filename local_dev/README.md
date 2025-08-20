@@ -8,11 +8,37 @@ Deploy a local JupyterHub instance for BERDL development using Kubernetes.
 
 ## Deployment
 
+### Option 1: Using Pre-built Images (Recommended for Testing)
+
 ```bash
 kubectl apply -k local_dev/
 ```
 
-* Use the provided local_dev directory to deploy the JupyterHub instance. This directory contains all necessary Kubernetes manifests and configurations.
+This uses the existing GitHub Container Registry images specified in the configuration files.
+
+### Option 2: Using Local Development Images
+
+If you want to test your local changes:
+
+1. **Build the image locally:**
+   ```bash
+   docker build -t berdl-jupyterhub:local .
+   ```
+
+2. **Update hub.yaml to use your local image:**
+   ```yaml
+   # In hub.yaml line 98, change:
+   image: ghcr.io/berdatalakehouse/berdl_jupyterhub:pr-3
+   # To:
+   image: berdl-jupyterhub:local
+   ```
+
+3. **Deploy:**
+   ```bash
+   kubectl apply -k local_dev/
+   ```
+
+### Alternative: Copy to Rancher UI
 * You can also copy them into the rancher2 UI to deploy them. Run `kustomize build . | pbcopy` to copy them to your clipboard.
 
 ## Configuration Files
