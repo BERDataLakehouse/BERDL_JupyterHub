@@ -1,0 +1,20 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: jupyterhub-ingress
+  namespace: jupyterhub-dev
+spec:
+  tls:
+  - hosts:
+    - hub.berdl.kbase.us
+  rules:
+  - host: hub.berdl.kbase.us
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: jupyterhub
+            port:
+              number: 8000

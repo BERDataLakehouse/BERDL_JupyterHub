@@ -22,19 +22,19 @@ The container is configured at runtime using the following environment variables
 
 ### Required Variables
 
-| Variable                                | Description                                                 |
-|-----------------------------------------|-------------------------------------------------------------|
+| Variable                                | Description                                               |
+|-----------------------------------------|-----------------------------------------------------------|
 | `JUPYTERHUB_COOKIE_SECRET_64_HEX_CHARS` | A 64-character hex string for securing user session cookies. |
-| `JUPYTERHUB_TEMPLATES_DIR`              | The path to custom HTML templates for login.                |
-| `KBASE_ORIGIN`                          | The KBase service URL used by the auth login html.          |
-| `KBASE_AUTH_URL`                        | The URL for the KBase authentication service.               |
-| `CDM_TASK_SERVICE_URL`                  | The URL for the CTS service.                                |
-| `GOVERNANCE_API_URL`                    | The URL for the Governance API.                             |
-| `MINIO_ENDPOINT_URL`                    | The endpoint URL for the MinIO object storage service.      |
-| `SPARK_CLUSTER_MANAGER_API_URL`         | The URL for the Spark Cluster Manager API.                  |
-| `BERDL_HIVE_METASTORE_URI`              | The URI for the Hive Metastore service.                     |
-| `BERDL_NOTEBOOK_IMAGE_TAG`              | The BERDL Compatible Notebook tag                           |
-
+| `JUPYTERHUB_TEMPLATES_DIR`              | The path to custom HTML templates for login.              |
+| `KBASE_ORIGIN`                          | The KBase service URL used by the auth login html.        |
+| `KBASE_AUTH_URL`                        | The URL for the KBase authentication service.             |
+| `CDM_TASK_SERVICE_URL`                  | The URL for the CTS service.                              |
+| `GOVERNANCE_API_URL`                    | The URL for the Governance API.                           |
+| `MINIO_ENDPOINT_URL`                    | The endpoint URL for the MinIO object storage service.    |
+| `SPARK_CLUSTER_MANAGER_API_URL`         | The URL for the Spark Cluster Manager API.                |
+| `BERDL_HIVE_METASTORE_URI`              | The URI for the Hive Metastore service.                   |
+| `BERDL_NOTEBOOK_IMAGE_TAG`              | The BERDL Compatible Notebook tag                         |
+| `BERDL_SKIP_SPAWN_HOOKS`                | If set, skips the spawn hooks for user notebook servers.  |
 ### Optional Variables
 
 | Variable                                | Default Value    | Description                                                                      |

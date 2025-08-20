@@ -13,7 +13,6 @@ dependencies = [
     "jupyterhub-idle-culler==1.4.0",
     "jupyterhub-kubespawner==7.0.0",
     "kubernetes>=33.1.0",
-
 ]
 
 
