@@ -65,8 +65,8 @@ class TestGovernanceUtils:
                     "MINIO_ENDPOINT": "https://minio.example.com",
                     "MINIO_SECURE": "True",
                     "MINIO_CREDS_JSON": (
-                        '{"access_key": "test_access_key", "secret_key": "test_secret_key", '
-                        '"endpoint": "https://minio.example.com", "secure": true, "error": null}'
+                        '{{"access_key": "test_access_key", "secret_key": "test_secret_key", '
+                        '"endpoint": "https://minio.example.com", "secure": true, "error": null}}'
                     ),
                 }
                 assert spawner.environment == expected_env
@@ -149,8 +149,8 @@ class TestGovernanceUtils:
                     "MINIO_SECURE": "False",
                     "MINIO_CONFIG_ERROR": "Failed to retrieve MinIO credentials. Please contact an administrator.",
                     "MINIO_CREDS_JSON": (
-                        '{"access_key": "", "secret_key": "", "endpoint": "", "secure": false, '
-                        '"error": "Failed to retrieve MinIO credentials. Please contact an administrator."}'
+                        '{{"access_key": "", "secret_key": "", "endpoint": "", "secure": false, '
+                        '"error": "Failed to retrieve MinIO credentials. Please contact an administrator."}}'
                     ),
                 }
                 assert spawner.environment == expected_env
@@ -185,8 +185,8 @@ class TestGovernanceUtils:
                 "MINIO_SECURE": "False",
                 "MINIO_CONFIG_ERROR": "Failed to retrieve MinIO credentials. Please contact an administrator.",
                 "MINIO_CREDS_JSON": (
-                    '{"access_key": "", "secret_key": "", "endpoint": "", "secure": false, '
-                    '"error": "Failed to retrieve MinIO credentials. Please contact an administrator."}'
+                    '{{"access_key": "", "secret_key": "", "endpoint": "", "secure": false, '
+                    '"error": "Failed to retrieve MinIO credentials. Please contact an administrator."}}'
                 ),
             }
             assert spawner.environment == expected_env
