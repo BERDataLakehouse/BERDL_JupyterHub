@@ -53,10 +53,11 @@ class GovernanceUtils:
                 "error": None,
             }
 
-            # Set environment variable for lifecycle hook
+            # Set environment variables for lifecycle hook
             # Escape braces to prevent KubeSpawner template expansion
             json_str = json.dumps(creds_data).replace("{", "{{").replace("}", "}}")
             spawner.environment["MINIO_CREDS_JSON"] = json_str
+            spawner.environment["MINIO_CREDS_FILE_PATH"] = f"/home/{spawner.user.name}/.minio_credentials.json"
 
             spawner.log.info("Successfully set MinIO credentials for user %s.", spawner.user.name)
 
@@ -89,7 +90,8 @@ class GovernanceUtils:
                 "error": "Failed to retrieve MinIO credentials. Please contact an administrator.",
             }
 
-            # Set environment variable for lifecycle hook
+            # Set environment variables for lifecycle hook
             # Escape braces to prevent KubeSpawner template expansion
             json_str = json.dumps(error_creds).replace("{", "{{").replace("}", "}}")
             spawner.environment["MINIO_CREDS_JSON"] = json_str
+            spawner.environment["MINIO_CREDS_FILE_PATH"] = f"/home/{spawner.user.name}/.minio_credentials.json"
