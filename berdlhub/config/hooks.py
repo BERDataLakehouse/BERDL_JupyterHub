@@ -107,8 +107,8 @@ def configure_hooks(c):
                     "-c",
                     "ln -sfn /global_share /home/$NB_USER/global_share || true; "
                     'if [ ! -z "$MINIO_CREDS_JSON" ]; then '
-                    'echo "$MINIO_CREDS_JSON" > /home/$NB_USER/minio_creds.json && '
-                    "chown $NB_UID:$NB_GID /home/$NB_USER/minio_creds.json; "
+                    'echo "$MINIO_CREDS_JSON" > /home/$NB_USER/.minio_credentials.json && '
+                    "chown $NB_UID:$NB_GID /home/$NB_USER/.minio_credentials.json; "
                     "fi",
                 ]
             }

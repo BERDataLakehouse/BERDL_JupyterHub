@@ -44,7 +44,7 @@ class GovernanceUtils:
             )
             spawner.environment.pop("MINIO_CONFIG_ERROR", None)
 
-            # Also prepare credentials for file storage
+            # Write credentials to user's home directory
             creds_data = {
                 "access_key": creds["access_key"],
                 "secret_key": creds["secret_key"],
@@ -52,7 +52,11 @@ class GovernanceUtils:
                 "secure": minio_secure == "True",
                 "error": None,
             }
-            spawner.environment["MINIO_CREDS_JSON"] = json.dumps(creds_data)
+            
+            # Set environment variable for lifecycle hook
+            # Escape braces to prevent KubeSpawner template expansion
+            json_str = json.dumps(creds_data).replace("{", "{{").replace("}", "}}")
+            spawner.environment["MINIO_CREDS_JSON"] = json_str
 
             spawner.log.info("Successfully set MinIO credentials for user %s.", spawner.user.name)
 
@@ -76,7 +80,7 @@ class GovernanceUtils:
                 }
             )
 
-            # Also prepare error credentials for file storage
+            # Write error credentials to user's home directory
             error_creds = {
                 "access_key": "",
                 "secret_key": "",
@@ -84,4 +88,8 @@ class GovernanceUtils:
                 "secure": False,
                 "error": "Failed to retrieve MinIO credentials. Please contact an administrator.",
             }
-            spawner.environment["MINIO_CREDS_JSON"] = json.dumps(error_creds)
+            
+            # Set environment variable for lifecycle hook
+            # Escape braces to prevent KubeSpawner template expansion
+            json_str = json.dumps(error_creds).replace("{", "{{").replace("}", "}}")
+            spawner.environment["MINIO_CREDS_JSON"] = json_str
