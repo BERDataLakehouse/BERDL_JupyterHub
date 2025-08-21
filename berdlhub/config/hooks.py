@@ -27,7 +27,9 @@ async def pre_spawn_hook(spawner):
     spawner.log.debug("Pre-spawn hook called for user %s", spawner.user.name)
     kb_auth_token = await _get_auth_token(spawner)
     if os.environ["BERDL_SKIP_SPAWN_HOOKS"].lower() == "true":
-        spawner.log.info("Skipping pre-spawn hook due to BERDL_SKIP_SPAWN_HOOKS environment variable.")
+        spawner.log.info(
+            "Skipping pre-spawn hook due to BERDL_SKIP_SPAWN_HOOKS environment variable."
+        )
         return
 
     await GovernanceUtils(kb_auth_token).set_governance_credentials(spawner)
@@ -41,7 +43,9 @@ async def post_stop_hook(spawner):
     kb_auth_token = await _get_auth_token(spawner)
     spawner.log.debug("Post-stop hook called for user %s", spawner.user.name)
     if os.environ["BERDL_SKIP_SPAWN_HOOKS"].lower() == "true":
-        spawner.log.info("Skipping post-stop hook due to BERDL_SKIP_SPAWN_HOOKS environment variable.")
+        spawner.log.info(
+            "Skipping post-stop hook due to BERDL_SKIP_SPAWN_HOOKS environment variable."
+        )
         return
     await SparkClusterManager(kb_auth_token).stop_spark_cluster(spawner)
 
@@ -51,42 +55,60 @@ def modify_pod_hook(spawner, pod):
         client.V1EnvVar(
             "BERDL_POD_IP",
             None,
-            client.V1EnvVarSource(field_ref=client.V1ObjectFieldSelector(field_path="status.podIP")),
+            client.V1EnvVarSource(
+                field_ref=client.V1ObjectFieldSelector(field_path="status.podIP")
+            ),
         )
     )
     pod.spec.containers[0].env.append(
         client.V1EnvVar(
             "BERDL_POD_NAME",
             None,
-            client.V1EnvVarSource(field_ref=client.V1ObjectFieldSelector(field_path="metadata.name")),
+            client.V1EnvVarSource(
+                field_ref=client.V1ObjectFieldSelector(field_path="metadata.name")
+            ),
         )
     )
     pod.spec.containers[0].env.append(
         client.V1EnvVar(
             "BERDL_CPU_REQUEST",
             None,
-            client.V1EnvVarSource(resource_field_ref=client.V1ResourceFieldSelector(resource="requests.cpu")),
+            client.V1EnvVarSource(
+                resource_field_ref=client.V1ResourceFieldSelector(
+                    resource="requests.cpu"
+                )
+            ),
         )
     )
     pod.spec.containers[0].env.append(
         client.V1EnvVar(
             "BERDL_CPU_LIMIT",
             None,
-            client.V1EnvVarSource(resource_field_ref=client.V1ResourceFieldSelector(resource="limits.cpu")),
+            client.V1EnvVarSource(
+                resource_field_ref=client.V1ResourceFieldSelector(resource="limits.cpu")
+            ),
         )
     )
     pod.spec.containers[0].env.append(
         client.V1EnvVar(
             "BERDL_MEMORY_REQUEST",
             None,
-            client.V1EnvVarSource(resource_field_ref=client.V1ResourceFieldSelector(resource="requests.memory")),
+            client.V1EnvVarSource(
+                resource_field_ref=client.V1ResourceFieldSelector(
+                    resource="requests.memory"
+                )
+            ),
         )
     )
     pod.spec.containers[0].env.append(
         client.V1EnvVar(
             "BERDL_MEMORY_LIMIT",
             None,
-            client.V1EnvVarSource(resource_field_ref=client.V1ResourceFieldSelector(resource="limits.memory")),
+            client.V1EnvVarSource(
+                resource_field_ref=client.V1ResourceFieldSelector(
+                    resource="limits.memory"
+                )
+            ),
         )
     )
 
