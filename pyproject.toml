@@ -82,3 +82,8 @@ dev = [
     "pytest>=8.4.1",
     "pytest-asyncio>=1.1.0",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["unit_tests"]
+pythonpath = ["."]
+addopts = "-v"

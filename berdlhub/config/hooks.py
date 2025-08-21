@@ -105,7 +105,11 @@ def configure_hooks(c):
                 "command": [
                     "/bin/sh",
                     "-c",
-                    "ln -sfn /global_share /home/$NB_USER/global_share || true",
+                    "ln -sfn /global_share /home/$NB_USER/global_share || true; "
+                    'if [ ! -z "$MINIO_CREDS_JSON" ]; then '
+                    'echo "$MINIO_CREDS_JSON" > /home/$NB_USER/minio_creds.json && '
+                    "chown $NB_UID:$NB_GID /home/$NB_USER/minio_creds.json; "
+                    "fi",
                 ]
             }
         }

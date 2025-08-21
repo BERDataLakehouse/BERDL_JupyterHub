@@ -194,7 +194,6 @@ class SparkClusterManager:
 
             self.logger.error(f"Error deleting Spark cluster for user {username}: {error_message}")
 
-
         except Exception as e:
             self.logger.error(f"Error deleting Spark cluster for user {username}: {str(e)}")
 

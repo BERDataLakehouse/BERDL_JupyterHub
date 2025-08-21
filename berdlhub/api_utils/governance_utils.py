@@ -1,3 +1,4 @@
+import json
 import os
 
 import httpx
@@ -32,7 +33,7 @@ class GovernanceUtils:
                 response.raise_for_status()
                 creds = response.json()
 
-            # Set successful credentials
+            # Set successful credentials in environment (existing behavior)
             spawner.environment.update(
                 {
                     "MINIO_ACCESS_KEY": creds["access_key"],
@@ -42,6 +43,16 @@ class GovernanceUtils:
                 }
             )
             spawner.environment.pop("MINIO_CONFIG_ERROR", None)
+
+            # Also prepare credentials for file storage
+            creds_data = {
+                "access_key": creds["access_key"],
+                "secret_key": creds["secret_key"],
+                "endpoint": minio_endpoint,
+                "secure": minio_secure == "True",
+                "error": None,
+            }
+            spawner.environment["MINIO_CREDS_JSON"] = json.dumps(creds_data)
 
             spawner.log.info("Successfully set MinIO credentials for user %s.", spawner.user.name)
 
@@ -54,6 +65,7 @@ class GovernanceUtils:
                 exc_info=True,
             )
 
+            # Set empty credentials in environment (existing behavior)
             spawner.environment.update(
                 {
                     "MINIO_ACCESS_KEY": "",
@@ -63,3 +75,13 @@ class GovernanceUtils:
                     "MINIO_CONFIG_ERROR": "Failed to retrieve MinIO credentials. Please contact an administrator.",
                 }
             )
+
+            # Also prepare error credentials for file storage
+            error_creds = {
+                "access_key": "",
+                "secret_key": "",
+                "endpoint": "",
+                "secure": False,
+                "error": "Failed to retrieve MinIO credentials. Please contact an administrator.",
+            }
+            spawner.environment["MINIO_CREDS_JSON"] = json.dumps(error_creds)

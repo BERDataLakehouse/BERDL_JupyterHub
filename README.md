@@ -1,5 +1,7 @@
 # BERDL JupyterHub on Kubernetes
 
+[![Tests](https://github.com/kbase/BERDL_JupyterHub/actions/workflows/test.yml/badge.svg)](https://github.com/kbase/BERDL_JupyterHub/actions/workflows/test.yml)
+
 This project provides the necessary configuration to build and deploy a JupyterHub instance on Kubernetes for the BERDL project.
 
 It uses `KubeSpawner` to launch user notebook servers as individual Kubernetes pods and authenticates users against KBase. The entire application is packaged into a self-contained Docker image for easy deployment.
@@ -61,6 +63,76 @@ The container is configured at runtime using the following environment variables
 **Note**: All required variables **must be set at runtime**. Optional variables will use their default values if not provided.
 
 # User Guide
+
+# Development
+
+## Local Development Setup
+
+This project uses [uv](https://docs.astral.sh/uv/) for Python package management and development.
+
+### Prerequisites
+
+- Python 3.10 or higher
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) package manager
+
+### Setup Development Environment
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd BERDL_JupyterHub
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   # Install production dependencies only
+   uv sync --locked --inexact --no-dev
+   
+   # Or install with development dependencies (recommended for development)
+   uv sync --locked --inexact
+   ```
+
+### Running Tests
+
+```bash
+# Run all tests
+uv run pytest
+
+# Run tests in a specific directory
+uv run pytest unit_tests/api_utils/
+
+# Run tests matching a pattern
+uv run pytest -k "governance"
+
+# Run with shorter output
+uv run pytest -q
+
+# Stop on first failure
+uv run pytest -x
+```
+
+### Code Quality
+
+```bash
+# Format code
+ruff format .
+
+# Check linting
+ruff check .
+
+# Fix linting issues automatically
+ruff check . --fix
+```
+
+### Building Docker Image
+
+```bash
+docker build -t berdl-jupyterhub .
+```
+
+### Local Kubernetes Development
+
+See `local_dev/README.md` for instructions on deploying to a local Kubernetes cluster.
 
 # Future Work and Known Issues
 

@@ -1,7 +1,8 @@
 import os
-import pytest
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import Mock, patch
+
 import httpx
+import pytest
 
 from berdlhub.api_utils.governance_utils import GovernanceUtils
 
@@ -30,16 +31,16 @@ class TestGovernanceUtils:
         spawner.user.name = "test_user"
 
         # Mock response data
-        mock_creds = {
-            "access_key": "test_access_key",
-            "secret_key": "test_secret_key"
-        }
+        mock_creds = {"access_key": "test_access_key", "secret_key": "test_secret_key"}
 
-        with patch.dict(os.environ, {
-            "GOVERNANCE_API_URL": "https://gov.example.com",
-            "MINIO_ENDPOINT_URL": "https://minio.example.com",
-            "MINIO_SECURE_FLAG": "True"
-        }):
+        with patch.dict(
+            os.environ,
+            {
+                "GOVERNANCE_API_URL": "https://gov.example.com",
+                "MINIO_ENDPOINT_URL": "https://minio.example.com",
+                "MINIO_SECURE_FLAG": "True",
+            },
+        ):
             with patch("httpx.AsyncClient") as mock_client:
                 # Configure mock response
                 mock_response = Mock()
@@ -54,7 +55,7 @@ class TestGovernanceUtils:
                 # Verify HTTP request
                 mock_client.return_value.__aenter__.return_value.get.assert_called_once_with(
                     "https://gov.example.com/credentials/",
-                    headers={"Authorization": "Bearer test_token"}
+                    headers={"Authorization": "Bearer test_token"},
                 )
 
                 # Verify spawner environment
@@ -62,7 +63,11 @@ class TestGovernanceUtils:
                     "MINIO_ACCESS_KEY": "test_access_key",
                     "MINIO_SECRET_KEY": "test_secret_key",
                     "MINIO_ENDPOINT": "https://minio.example.com",
-                    "MINIO_SECURE": "True"
+                    "MINIO_SECURE": "True",
+                    "MINIO_CREDS_JSON": (
+                        '{"access_key": "test_access_key", "secret_key": "test_secret_key", '
+                        '"endpoint": "https://minio.example.com", "secure": true, "error": null}'
+                    ),
                 }
                 assert spawner.environment == expected_env
 
@@ -70,9 +75,7 @@ class TestGovernanceUtils:
                 assert "MINIO_CONFIG_ERROR" not in spawner.environment
 
                 # Verify logging
-                spawner.log.info.assert_called_once_with(
-                    "Successfully set MinIO credentials for user %s.", "test_user"
-                )
+                spawner.log.info.assert_called_once_with("Successfully set MinIO credentials for user %s.", "test_user")
 
     @pytest.mark.asyncio
     async def test_set_governance_credentials_with_default_secure_flag(self):
@@ -88,11 +91,15 @@ class TestGovernanceUtils:
 
         mock_creds = {"access_key": "key", "secret_key": "secret"}
 
-        with patch.dict(os.environ, {
-            "GOVERNANCE_API_URL": "https://gov.example.com",
-            "MINIO_ENDPOINT_URL": "https://minio.example.com"
-            # MINIO_SECURE_FLAG not set
-        }, clear=True):
+        with patch.dict(
+            os.environ,
+            {
+                "GOVERNANCE_API_URL": "https://gov.example.com",
+                "MINIO_ENDPOINT_URL": "https://minio.example.com",
+                # MINIO_SECURE_FLAG not set
+            },
+            clear=True,
+        ):
             with patch("httpx.AsyncClient") as mock_client:
                 mock_response = Mock()
                 mock_response.json.return_value = mock_creds
@@ -116,11 +123,14 @@ class TestGovernanceUtils:
         spawner.user = Mock()
         spawner.user.name = "test_user"
 
-        with patch.dict(os.environ, {
-            "GOVERNANCE_API_URL": "https://gov.example.com",
-            "MINIO_ENDPOINT_URL": "https://minio.example.com",
-            "MINIO_SECURE_FLAG": "False"
-        }):
+        with patch.dict(
+            os.environ,
+            {
+                "GOVERNANCE_API_URL": "https://gov.example.com",
+                "MINIO_ENDPOINT_URL": "https://minio.example.com",
+                "MINIO_SECURE_FLAG": "False",
+            },
+        ):
             with patch("httpx.AsyncClient") as mock_client:
                 # Configure mock to raise HTTP error
                 mock_response = Mock()
@@ -137,7 +147,11 @@ class TestGovernanceUtils:
                     "MINIO_SECRET_KEY": "",
                     "MINIO_ENDPOINT": "",
                     "MINIO_SECURE": "False",
-                    "MINIO_CONFIG_ERROR": "Failed to retrieve MinIO credentials. Please contact an administrator."
+                    "MINIO_CONFIG_ERROR": "Failed to retrieve MinIO credentials. Please contact an administrator.",
+                    "MINIO_CREDS_JSON": (
+                        '{"access_key": "", "secret_key": "", "endpoint": "", "secure": false, '
+                        '"error": "Failed to retrieve MinIO credentials. Please contact an administrator."}'
+                    ),
                 }
                 assert spawner.environment == expected_env
 
@@ -169,7 +183,11 @@ class TestGovernanceUtils:
                 "MINIO_SECRET_KEY": "",
                 "MINIO_ENDPOINT": "",
                 "MINIO_SECURE": "False",
-                "MINIO_CONFIG_ERROR": "Failed to retrieve MinIO credentials. Please contact an administrator."
+                "MINIO_CONFIG_ERROR": "Failed to retrieve MinIO credentials. Please contact an administrator.",
+                "MINIO_CREDS_JSON": (
+                    '{"access_key": "", "secret_key": "", "endpoint": "", "secure": false, '
+                    '"error": "Failed to retrieve MinIO credentials. Please contact an administrator."}'
+                ),
             }
             assert spawner.environment == expected_env
 
@@ -188,11 +206,14 @@ class TestGovernanceUtils:
         spawner.user = Mock()
         spawner.user.name = "test_user"
 
-        with patch.dict(os.environ, {
-            "GOVERNANCE_API_URL": "https://gov.example.com",
-            "MINIO_ENDPOINT_URL": "https://minio.example.com",
-            "MINIO_SECURE_FLAG": "True"
-        }):
+        with patch.dict(
+            os.environ,
+            {
+                "GOVERNANCE_API_URL": "https://gov.example.com",
+                "MINIO_ENDPOINT_URL": "https://minio.example.com",
+                "MINIO_SECURE_FLAG": "True",
+            },
+        ):
             with patch("httpx.AsyncClient") as mock_client:
                 mock_response = Mock()
                 mock_response.raise_for_status.return_value = None
@@ -202,7 +223,8 @@ class TestGovernanceUtils:
                 await utils.set_governance_credentials(spawner)
 
                 # Verify error environment
-                assert spawner.environment["MINIO_CONFIG_ERROR"] == "Failed to retrieve MinIO credentials. Please contact an administrator."
+                error_msg = "Failed to retrieve MinIO credentials. Please contact an administrator."
+                assert spawner.environment["MINIO_CONFIG_ERROR"] == error_msg
                 spawner.log.error.assert_called_once()
 
     @pytest.mark.asyncio
@@ -219,11 +241,14 @@ class TestGovernanceUtils:
 
         mock_creds = {"access_key": "key", "secret_key": "secret"}
 
-        with patch.dict(os.environ, {
-            "GOVERNANCE_API_URL": "https://gov.example.com",
-            "MINIO_ENDPOINT_URL": "https://minio.example.com",
-            "MINIO_SECURE_FLAG": "True"
-        }):
+        with patch.dict(
+            os.environ,
+            {
+                "GOVERNANCE_API_URL": "https://gov.example.com",
+                "MINIO_ENDPOINT_URL": "https://minio.example.com",
+                "MINIO_SECURE_FLAG": "True",
+            },
+        ):
             with patch("httpx.AsyncClient") as mock_client:
                 mock_response = Mock()
                 mock_response.json.return_value = mock_creds
@@ -247,18 +272,22 @@ class TestGovernanceUtils:
         spawner.user = Mock()
         spawner.user.name = "test_user"
 
-        with patch.dict(os.environ, {
-            "GOVERNANCE_API_URL": "https://gov.example.com",
-            "MINIO_ENDPOINT_URL": "https://minio.example.com",
-            "MINIO_SECURE_FLAG": "True"
-        }):
+        with patch.dict(
+            os.environ,
+            {
+                "GOVERNANCE_API_URL": "https://gov.example.com",
+                "MINIO_ENDPOINT_URL": "https://minio.example.com",
+                "MINIO_SECURE_FLAG": "True",
+            },
+        ):
             with patch("httpx.AsyncClient") as mock_client:
                 mock_client.return_value.__aenter__.return_value.get.side_effect = httpx.TimeoutException("Timeout")
 
                 await utils.set_governance_credentials(spawner)
 
                 # Verify error handling
-                assert spawner.environment["MINIO_CONFIG_ERROR"] == "Failed to retrieve MinIO credentials. Please contact an administrator."
+                error_msg = "Failed to retrieve MinIO credentials. Please contact an administrator."
+                assert spawner.environment["MINIO_CONFIG_ERROR"] == error_msg
                 spawner.log.error.assert_called_once()
 
     @pytest.mark.asyncio
@@ -270,7 +299,7 @@ class TestGovernanceUtils:
         spawner = Mock()
         spawner.environment = {
             "OTHER_VAR": "preserved_value",
-            "ANOTHER_VAR": "also_preserved"
+            "ANOTHER_VAR": "also_preserved",
         }
         spawner.log = Mock()
         spawner.user = Mock()
@@ -278,11 +307,14 @@ class TestGovernanceUtils:
 
         mock_creds = {"access_key": "key", "secret_key": "secret"}
 
-        with patch.dict(os.environ, {
-            "GOVERNANCE_API_URL": "https://gov.example.com",
-            "MINIO_ENDPOINT_URL": "https://minio.example.com",
-            "MINIO_SECURE_FLAG": "True"
-        }):
+        with patch.dict(
+            os.environ,
+            {
+                "GOVERNANCE_API_URL": "https://gov.example.com",
+                "MINIO_ENDPOINT_URL": "https://minio.example.com",
+                "MINIO_SECURE_FLAG": "True",
+            },
+        ):
             with patch("httpx.AsyncClient") as mock_client:
                 mock_response = Mock()
                 mock_response.json.return_value = mock_creds
