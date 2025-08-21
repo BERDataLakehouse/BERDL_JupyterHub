@@ -68,6 +68,7 @@ class TestGovernanceUtils:
                         '{{"access_key": "test_access_key", "secret_key": "test_secret_key", '
                         '"endpoint": "https://minio.example.com", "secure": true, "error": null}}'
                     ),
+                    "MINIO_CREDS_FILE_PATH": "/home/test_user/.minio_credentials.json",
                 }
                 assert spawner.environment == expected_env
 
@@ -152,6 +153,7 @@ class TestGovernanceUtils:
                         '{{"access_key": "", "secret_key": "", "endpoint": "", "secure": false, '
                         '"error": "Failed to retrieve MinIO credentials. Please contact an administrator."}}'
                     ),
+                    "MINIO_CREDS_FILE_PATH": "/home/test_user/.minio_credentials.json",
                 }
                 assert spawner.environment == expected_env
 
@@ -188,6 +190,7 @@ class TestGovernanceUtils:
                     '{{"access_key": "", "secret_key": "", "endpoint": "", "secure": false, '
                     '"error": "Failed to retrieve MinIO credentials. Please contact an administrator."}}'
                 ),
+                "MINIO_CREDS_FILE_PATH": "/home/test_user/.minio_credentials.json",
             }
             assert spawner.environment == expected_env
 
