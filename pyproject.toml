@@ -81,4 +81,10 @@ cdm-spark-manager-client = { git = "https://github.com/kbase/cdm-kube-spark-mana
 dev = [
     "pytest>=8.4.1",
     "pytest-asyncio>=1.1.0",
+    "ruff>=0.8.0",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["unit_tests"]
+pythonpath = ["."]
+addopts = "-v"

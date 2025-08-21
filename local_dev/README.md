@@ -46,6 +46,10 @@ If you want to test your local changes:
 ### [configmap.yaml](configmap.yaml)
 * Modify the configmap and redeploy the hub to pick up the changes.
 * BERDL_NOTEBOOK_IMAGE_TAG = set to the tag of the BERDL compatible notebook image you want to use, such as `berdl-notebook:latest`
+* NODE_SELECTOR_HOSTNAME = set to your Kubernetes node name:
+  - For minikube: `minikube`
+  - For Rancher Desktop: `lima-rancher-desktop`
+  - Check your node name with: `kubectl get nodes`
 
 ### [hub.yaml](hub.yaml)
 * Modify the image tag to the tag of the BERDL JupyterHub image you want to use, you can build it locally or open a PR, and use the ghcr.io created images or a locally built image.

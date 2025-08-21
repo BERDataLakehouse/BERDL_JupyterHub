@@ -1,17 +1,18 @@
-import pytest
 import os
-from unittest.mock import Mock, AsyncMock, patch, MagicMock
-from dataclasses import dataclass
+from unittest.mock import AsyncMock, Mock, patch
 
+import pytest
 from spark_manager_client.models import (
     ClusterDeleteResponse,
-    SparkClusterConfig,
     SparkClusterCreateResponse,
 )
-from spark_manager_client.types import Response
 
 # Import the classes to test
-from berdlhub.api_utils.spark_utils import SparkClusterManager, ClusterDefaults, SparkClusterError
+from berdlhub.api_utils.spark_utils import (
+    ClusterDefaults,
+    SparkClusterError,
+    SparkClusterManager,
+)
 
 
 class TestClusterDefaults:
@@ -33,7 +34,7 @@ class TestClusterDefaults:
             worker_cores=2,
             worker_memory="20GiB",
             master_cores=2,
-            master_memory="4GiB"
+            master_memory="4GiB",
         )
         assert defaults.worker_count == 4
         assert defaults.worker_cores == 2
@@ -41,13 +42,16 @@ class TestClusterDefaults:
         assert defaults.master_cores == 2
         assert defaults.master_memory == "4GiB"
 
-    @patch.dict(os.environ, {
-        "DEFAULT_WORKER_COUNT": "5",
-        "DEFAULT_WORKER_CORES": "3",
-        "DEFAULT_WORKER_MEMORY": "15GiB",
-        "DEFAULT_MASTER_CORES": "2",
-        "DEFAULT_MASTER_MEMORY": "3GiB"
-    })
+    @patch.dict(
+        os.environ,
+        {
+            "DEFAULT_WORKER_COUNT": "5",
+            "DEFAULT_WORKER_CORES": "3",
+            "DEFAULT_WORKER_MEMORY": "15GiB",
+            "DEFAULT_MASTER_CORES": "2",
+            "DEFAULT_MASTER_MEMORY": "3GiB",
+        },
+    )
     def test_from_environment_with_env_vars(self):
         """Test loading from environment variables."""
         defaults = ClusterDefaults.from_environment()
@@ -74,7 +78,7 @@ class TestSparkClusterManager:
     @pytest.fixture
     def mock_client(self):
         """Mock authenticated client."""
-        with patch('berdlhub.AuthenticatedClient') as mock:
+        with patch("berdlhub.api_utils.spark_utils.AuthenticatedClient") as mock:
             yield mock
 
     @pytest.fixture
@@ -118,7 +122,7 @@ class TestSparkClusterManager:
             worker_cores=2,
             worker_memory="20GiB",
             master_cores=2,
-            master_memory="4GiB"
+            master_memory="4GiB",
         )
         assert config.worker_count == 4
         assert config.worker_cores == 2
@@ -156,13 +160,17 @@ class TestSparkClusterManager:
             await manager._raise_api_error(mock_response, "Test operation")
 
     @pytest.mark.asyncio
-    @patch('berdlhub.create_cluster_clusters_post.asyncio_detailed')
+    @patch("berdlhub.api_utils.spark_utils.create_cluster_clusters_post.asyncio_detailed")
     async def test_create_cluster_success(self, mock_create, manager):
         """Test successful cluster creation."""
         # Mock response
         mock_response = Mock()
         mock_response.status_code = 201
-        mock_response.parsed = SparkClusterCreateResponse(master_url="spark://test:7077")
+        mock_response.parsed = SparkClusterCreateResponse(
+            cluster_id="test-cluster-123",
+            master_url="spark://test:7077",
+            master_ui_url="http://test:8080",
+        )
         mock_create.return_value = mock_response
 
         # Mock client context manager
@@ -175,7 +183,7 @@ class TestSparkClusterManager:
         mock_create.assert_called_once()
 
     @pytest.mark.asyncio
-    @patch('berdlhub.create_cluster_clusters_post.asyncio_detailed')
+    @patch("berdlhub.api_utils.spark_utils.create_cluster_clusters_post.asyncio_detailed")
     async def test_create_cluster_failure(self, mock_create, manager):
         """Test cluster creation failure."""
         # Mock failed response
@@ -189,11 +197,14 @@ class TestSparkClusterManager:
         manager.client.__aenter__ = AsyncMock(return_value=manager.client)
         manager.client.__aexit__ = AsyncMock(return_value=None)
 
-        with pytest.raises(SparkClusterError, match="Cluster creation failed \\(HTTP 400\\): Invalid config"):
+        with pytest.raises(
+            SparkClusterError,
+            match="Cluster creation failed \\(HTTP 400\\): Invalid config",
+        ):
             await manager.create_cluster()
 
     @pytest.mark.asyncio
-    @patch('berdlhub.delete_cluster_clusters_delete.asyncio_detailed')
+    @patch("berdlhub.api_utils.spark_utils.delete_cluster_clusters_delete.asyncio_detailed")
     async def test_stop_spark_cluster_success(self, mock_delete, manager):
         """Test successful cluster deletion."""
         # Mock spawner
@@ -203,7 +214,7 @@ class TestSparkClusterManager:
         # Mock response
         mock_response = Mock()
         mock_response.status_code = 200
-        mock_response.parsed = ClusterDeleteResponse()
+        mock_response.parsed = ClusterDeleteResponse(message="Cluster deleted successfully")
         mock_delete.return_value = mock_response
 
         # Mock client context manager
@@ -216,7 +227,7 @@ class TestSparkClusterManager:
         mock_delete.assert_called_once()
 
     @pytest.mark.asyncio
-    @patch('berdlhub.delete_cluster_clusters_delete.asyncio_detailed')
+    @patch("berdlhub.api_utils.spark_utils.delete_cluster_clusters_delete.asyncio_detailed")
     async def test_stop_spark_cluster_204_response(self, mock_delete, manager):
         """Test cluster deletion with 204 response."""
         # Mock spawner
@@ -239,7 +250,7 @@ class TestSparkClusterManager:
         mock_delete.assert_called_once()
 
     @pytest.mark.asyncio
-    @patch('berdlhub.delete_cluster_clusters_delete.asyncio_detailed')
+    @patch("berdlhub.api_utils.spark_utils.delete_cluster_clusters_delete.asyncio_detailed")
     async def test_stop_spark_cluster_failure(self, mock_delete, manager):
         """Test cluster deletion failure - should not raise exception."""
         # Mock spawner
@@ -261,7 +272,7 @@ class TestSparkClusterManager:
         assert result is None
 
     @pytest.mark.asyncio
-    @patch('berdlhub.delete_cluster_clusters_delete.asyncio_detailed')
+    @patch("berdlhub.api_utils.spark_utils.delete_cluster_clusters_delete.asyncio_detailed")
     async def test_stop_spark_cluster_exception(self, mock_delete, manager):
         """Test cluster deletion with exception."""
         # Mock spawner
@@ -288,7 +299,11 @@ class TestSparkClusterManager:
         mock_spawner.environment = {}
 
         # Mock create_cluster method
-        mock_response = SparkClusterCreateResponse(master_url="spark://test:7077")
+        mock_response = SparkClusterCreateResponse(
+            cluster_id="test-cluster-123",
+            master_url="spark://test:7077",
+            master_ui_url="http://test:8080",
+        )
         manager.create_cluster = AsyncMock(return_value=mock_response)
 
         result = await manager.start_spark_cluster(mock_spawner)
@@ -351,11 +366,11 @@ class TestSparkClusterManagerIntegration:
             "DEFAULT_WORKER_CORES": "2",
             "DEFAULT_WORKER_MEMORY": "15GiB",
             "DEFAULT_MASTER_CORES": "2",
-            "DEFAULT_MASTER_MEMORY": "3GiB"
+            "DEFAULT_MASTER_MEMORY": "3GiB",
         }
 
         with patch.dict(os.environ, env_vars):
-            with patch('berdlhub.AuthenticatedClient'):
+            with patch("berdlhub.api_utils.spark_utils.AuthenticatedClient"):
                 yield SparkClusterManager("test-token")
 
     def test_manager_uses_environment_defaults(self, manager_with_env):
@@ -376,11 +391,15 @@ class TestSparkClusterManagerIntegration:
         mock_spawner.environment = {}
 
         # Mock create_cluster
-        create_response = SparkClusterCreateResponse(master_url="spark://test:7077")
+        create_response = SparkClusterCreateResponse(
+            cluster_id="test-cluster-123",
+            master_url="spark://test:7077",
+            master_ui_url="http://test:8080",
+        )
         manager_with_env.create_cluster = AsyncMock(return_value=create_response)
 
         # Mock stop_spark_cluster
-        delete_response = ClusterDeleteResponse()
+        delete_response = ClusterDeleteResponse(message="Cluster deleted successfully")
         manager_with_env.stop_spark_cluster = AsyncMock(return_value=delete_response)
 
         # Test create
