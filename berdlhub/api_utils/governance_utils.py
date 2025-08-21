@@ -52,7 +52,7 @@ class GovernanceUtils:
                 "secure": minio_secure == "True",
                 "error": None,
             }
-            
+
             # Set environment variable for lifecycle hook
             # Escape braces to prevent KubeSpawner template expansion
             json_str = json.dumps(creds_data).replace("{", "{{").replace("}", "}}")
@@ -88,7 +88,7 @@ class GovernanceUtils:
                 "secure": False,
                 "error": "Failed to retrieve MinIO credentials. Please contact an administrator.",
             }
-            
+
             # Set environment variable for lifecycle hook
             # Escape braces to prevent KubeSpawner template expansion
             json_str = json.dumps(error_creds).replace("{", "{{").replace("}", "}}")
