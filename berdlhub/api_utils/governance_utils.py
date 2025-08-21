@@ -1,4 +1,3 @@
-import json
 import os
 
 import httpx
@@ -44,21 +43,6 @@ class GovernanceUtils:
             )
             spawner.environment.pop("MINIO_CONFIG_ERROR", None)
 
-            # Write credentials to user's home directory
-            creds_data = {
-                "access_key": creds["access_key"],
-                "secret_key": creds["secret_key"],
-                "endpoint": minio_endpoint,
-                "secure": minio_secure == "True",
-                "error": None,
-            }
-
-            # Set environment variables for lifecycle hook
-            # Escape braces to prevent KubeSpawner template expansion
-            json_str = json.dumps(creds_data).replace("{", "{{").replace("}", "}}")
-            spawner.environment["MINIO_CREDS_JSON"] = json_str
-            spawner.environment["MINIO_CREDS_FILE_PATH"] = f"/home/{spawner.user.name}/.minio_credentials.json"
-
             spawner.log.info("Successfully set MinIO credentials for user %s.", spawner.user.name)
 
         except Exception as e:
@@ -70,7 +54,6 @@ class GovernanceUtils:
                 exc_info=True,
             )
 
-            # Set empty credentials
             spawner.environment.update(
                 {
                     "MINIO_ACCESS_KEY": "",
@@ -80,18 +63,3 @@ class GovernanceUtils:
                     "MINIO_CONFIG_ERROR": "Failed to retrieve MinIO credentials. Please contact an administrator.",
                 }
             )
-
-            # Write error credentials to user's home directory
-            error_creds = {
-                "access_key": "",
-                "secret_key": "",
-                "endpoint": "",
-                "secure": False,
-                "error": "Failed to retrieve MinIO credentials. Please contact an administrator.",
-            }
-
-            # Set environment variables for lifecycle hook
-            # Escape braces to prevent KubeSpawner template expansion
-            json_str = json.dumps(error_creds).replace("{", "{{").replace("}", "}}")
-            spawner.environment["MINIO_CREDS_JSON"] = json_str
-            spawner.environment["MINIO_CREDS_FILE_PATH"] = f"/home/{spawner.user.name}/.minio_credentials.json"

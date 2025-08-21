@@ -64,11 +64,6 @@ class TestGovernanceUtils:
                     "MINIO_SECRET_KEY": "test_secret_key",
                     "MINIO_ENDPOINT": "https://minio.example.com",
                     "MINIO_SECURE": "True",
-                    "MINIO_CREDS_JSON": (
-                        '{{"access_key": "test_access_key", "secret_key": "test_secret_key", '
-                        '"endpoint": "https://minio.example.com", "secure": true, "error": null}}'
-                    ),
-                    "MINIO_CREDS_FILE_PATH": "/home/test_user/.minio_credentials.json",
                 }
                 assert spawner.environment == expected_env
 
@@ -149,11 +144,6 @@ class TestGovernanceUtils:
                     "MINIO_ENDPOINT": "",
                     "MINIO_SECURE": "False",
                     "MINIO_CONFIG_ERROR": "Failed to retrieve MinIO credentials. Please contact an administrator.",
-                    "MINIO_CREDS_JSON": (
-                        '{{"access_key": "", "secret_key": "", "endpoint": "", "secure": false, '
-                        '"error": "Failed to retrieve MinIO credentials. Please contact an administrator."}}'
-                    ),
-                    "MINIO_CREDS_FILE_PATH": "/home/test_user/.minio_credentials.json",
                 }
                 assert spawner.environment == expected_env
 
@@ -186,11 +176,6 @@ class TestGovernanceUtils:
                 "MINIO_ENDPOINT": "",
                 "MINIO_SECURE": "False",
                 "MINIO_CONFIG_ERROR": "Failed to retrieve MinIO credentials. Please contact an administrator.",
-                "MINIO_CREDS_JSON": (
-                    '{{"access_key": "", "secret_key": "", "endpoint": "", "secure": false, '
-                    '"error": "Failed to retrieve MinIO credentials. Please contact an administrator."}}'
-                ),
-                "MINIO_CREDS_FILE_PATH": "/home/test_user/.minio_credentials.json",
             }
             assert spawner.environment == expected_env
 
