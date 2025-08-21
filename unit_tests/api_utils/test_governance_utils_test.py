@@ -47,9 +47,7 @@ class TestGovernanceUtils:
                 mock_response.json.return_value = mock_creds
                 mock_response.raise_for_status.return_value = None
 
-                mock_client.return_value.__aenter__.return_value.get.return_value = (
-                    mock_response
-                )
+                mock_client.return_value.__aenter__.return_value.get.return_value = mock_response
 
                 # Execute
                 await utils.set_governance_credentials(spawner)
@@ -77,9 +75,7 @@ class TestGovernanceUtils:
                 assert "MINIO_CONFIG_ERROR" not in spawner.environment
 
                 # Verify logging
-                spawner.log.info.assert_called_once_with(
-                    "Successfully set MinIO credentials for user %s.", "test_user"
-                )
+                spawner.log.info.assert_called_once_with("Successfully set MinIO credentials for user %s.", "test_user")
 
     @pytest.mark.asyncio
     async def test_set_governance_credentials_with_default_secure_flag(self):
@@ -108,9 +104,7 @@ class TestGovernanceUtils:
                 mock_response = Mock()
                 mock_response.json.return_value = mock_creds
                 mock_response.raise_for_status.return_value = None
-                mock_client.return_value.__aenter__.return_value.get.return_value = (
-                    mock_response
-                )
+                mock_client.return_value.__aenter__.return_value.get.return_value = mock_response
 
                 await utils.set_governance_credentials(spawner)
 
@@ -143,9 +137,7 @@ class TestGovernanceUtils:
                 mock_response.raise_for_status.side_effect = httpx.HTTPStatusError(
                     "401 Unauthorized", request=Mock(), response=Mock()
                 )
-                mock_client.return_value.__aenter__.return_value.get.return_value = (
-                    mock_response
-                )
+                mock_client.return_value.__aenter__.return_value.get.return_value = mock_response
 
                 await utils.set_governance_credentials(spawner)
 
@@ -166,10 +158,7 @@ class TestGovernanceUtils:
                 # Verify error logging
                 spawner.log.error.assert_called_once()
                 error_call = spawner.log.error.call_args
-                assert (
-                    error_call[0][0]
-                    == "Failed to get governance credentials for user %s: %s"
-                )
+                assert error_call[0][0] == "Failed to get governance credentials for user %s: %s"
                 assert error_call[0][1] == "test_user"
 
     @pytest.mark.asyncio
@@ -229,9 +218,7 @@ class TestGovernanceUtils:
                 mock_response = Mock()
                 mock_response.raise_for_status.return_value = None
                 mock_response.json.side_effect = ValueError("Invalid JSON")
-                mock_client.return_value.__aenter__.return_value.get.return_value = (
-                    mock_response
-                )
+                mock_client.return_value.__aenter__.return_value.get.return_value = mock_response
 
                 await utils.set_governance_credentials(spawner)
 
@@ -266,9 +253,7 @@ class TestGovernanceUtils:
                 mock_response = Mock()
                 mock_response.json.return_value = mock_creds
                 mock_response.raise_for_status.return_value = None
-                mock_client.return_value.__aenter__.return_value.get.return_value = (
-                    mock_response
-                )
+                mock_client.return_value.__aenter__.return_value.get.return_value = mock_response
 
                 await utils.set_governance_credentials(spawner)
 
@@ -296,9 +281,7 @@ class TestGovernanceUtils:
             },
         ):
             with patch("httpx.AsyncClient") as mock_client:
-                mock_client.return_value.__aenter__.return_value.get.side_effect = (
-                    httpx.TimeoutException("Timeout")
-                )
+                mock_client.return_value.__aenter__.return_value.get.side_effect = httpx.TimeoutException("Timeout")
 
                 await utils.set_governance_credentials(spawner)
 
@@ -336,9 +319,7 @@ class TestGovernanceUtils:
                 mock_response = Mock()
                 mock_response.json.return_value = mock_creds
                 mock_response.raise_for_status.return_value = None
-                mock_client.return_value.__aenter__.return_value.get.return_value = (
-                    mock_response
-                )
+                mock_client.return_value.__aenter__.return_value.get.return_value = mock_response
 
                 await utils.set_governance_credentials(spawner)
 
