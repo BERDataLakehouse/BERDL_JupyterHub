@@ -33,7 +33,7 @@ class GovernanceUtils:
                 response.raise_for_status()
                 creds = response.json()
 
-            # Set successful credentials in environment (existing behavior)
+            # Set successful credentials
             spawner.environment.update(
                 {
                     "MINIO_ACCESS_KEY": creds["access_key"],
@@ -65,7 +65,7 @@ class GovernanceUtils:
                 exc_info=True,
             )
 
-            # Set empty credentials in environment (existing behavior)
+            # Set empty credentials
             spawner.environment.update(
                 {
                     "MINIO_ACCESS_KEY": "",
