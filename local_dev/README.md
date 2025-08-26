@@ -62,3 +62,4 @@ If you want to test your local changes:
 ```
 * You can get a copy of the TLS cert from our rancher if you want, otherwise you will have to use chrome and type 'thisisunsafe'
 * This TLS cert should not be distributed outside of your local environment.
+* If you don't want to set this up, you can change the authenticator to use `DummyAuthenticator` or similar and use `kubectl port-forward` to access the hub at `http://localhost:8000`.

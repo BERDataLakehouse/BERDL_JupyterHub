@@ -10,6 +10,7 @@ dependencies = [
     "fasteners==0.20",
     "httpx==0.28.1",
     "json5==0.12.1",
+    "jupyter-server-proxy==4.4.0",
     "jupyterhub-idle-culler==1.4.0",
     "jupyterhub-kubespawner==7.0.0",
     "kubernetes>=33.1.0",

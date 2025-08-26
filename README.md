@@ -63,6 +63,11 @@ The container is configured at runtime using the following environment variables
 **Note**: All required variables **must be set at runtime**. Optional variables will use their default values if not provided.
 
 # User Guide
+* Link to Read the docs
+
+# Dev Guide
+* See the [local_dev/README.md](local_dev/README.md) file for guidelines
+
 
 # Development
 
