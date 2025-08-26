@@ -57,6 +57,7 @@ The container is configured at runtime using the following environment variables
 | `DEFAULT_WORKER_COUNT`                  | `2`              | Default number of worker nodes for Spark clusters.                               |
 | `DEFAULT_WORKER_CORES`                  | `1`              | Default worker cores for Spark clusters.                                         |
 | `DEFAULT_WORKER_MEMORY`                 | `10GiB`          | Default worker memory for Spark clusters.                                         |
+| `BERDL_TOLERATIONS`                     | _(none)_         | Comma-separated list of tolerations in format 'key=value:effect' (e.g., 'environments=dev:NoSchedule,environments=prod:NoSchedule'). |
 
 ---
 
