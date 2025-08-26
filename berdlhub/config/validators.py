@@ -44,6 +44,10 @@ def validate_environment():
         "JUPYTERHUB_MEM_LIMIT_GB": "Memory limit in GB for JupyterHub users. Defaults to 4GB",
         "JUPYTERHUB_MEM_GUARANTEE_GB": "Memory guarantee in GB for JupyterHub users. Defaults to 2GB",
         "JUPYTERHUB_CPU_LIMIT": "CPU limit for JupyterHub users. Defaults to 2 cores",
+        "BERDL_TOLERATIONS": (
+            "Comma-separated list of tolerations in format 'key=value:effect' "
+            "(e.g., 'environments=dev:NoSchedule,environments=prod:NoSchedule')"
+        ),
     }
 
     # Check required variables
