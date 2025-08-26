@@ -46,6 +46,7 @@ If you want to test your local changes:
 ### [configmap.yaml](configmap.yaml)
 * Modify the configmap and redeploy the hub to pick up the changes.
 * BERDL_NOTEBOOK_IMAGE_TAG = set to the tag of the BERDL compatible notebook image you want to use, such as `berdl-notebook:latest`
+  - **Alternative**: Use external notebook image configuration (see [external-image-config-example.md](external-image-config-example.md)) to change images without hub redeploy
 * NODE_SELECTOR_HOSTNAME = set to your Kubernetes node name:
   - For minikube: `minikube`
   - For Rancher Desktop: `lima-rancher-desktop`

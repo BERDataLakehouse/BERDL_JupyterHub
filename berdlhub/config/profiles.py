@@ -1,12 +1,45 @@
 """User-selectable server profiles."""
 
 import os
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def _get_notebook_image_tag():
+    """Get notebook image tag from external source or fallback to environment variable.
+
+    First tries to read from mounted file, then falls back to environment variable.
+
+    Returns:
+        str: The notebook image tag to use
+    """
+    # Try to read from mounted file/secret first
+    image_tag_file = os.environ.get("BERDL_NOTEBOOK_IMAGE_TAG_FILE", "/etc/berdl/notebook-image-tag")
+
+    if os.path.exists(image_tag_file):
+        try:
+            with open(image_tag_file, "r") as f:
+                image_tag = f.read().strip()
+                if image_tag:
+                    logger.info(f"Using notebook image tag from file {image_tag_file}: {image_tag}")
+                    return image_tag
+        except Exception as e:
+            logger.warning(f"Failed to read notebook image tag from {image_tag_file}: {e}")
+
+    # Fallback to environment variable
+    if "BERDL_NOTEBOOK_IMAGE_TAG" in os.environ:
+        image_tag = os.environ["BERDL_NOTEBOOK_IMAGE_TAG"]
+        logger.info(f"Using notebook image tag from environment variable: {image_tag}")
+        return image_tag
+
+    raise ValueError("Neither BERDL_NOTEBOOK_IMAGE_TAG_FILE nor BERDL_NOTEBOOK_IMAGE_TAG is available")
 
 
 def configure_profiles(c):
     """Configure server profile options."""
 
-    berdl_image = os.environ["BERDL_NOTEBOOK_IMAGE_TAG"]
+    berdl_image = _get_notebook_image_tag()
 
     c.KubeSpawner.profile_list = [
         {

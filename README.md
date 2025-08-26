@@ -15,7 +15,18 @@ It uses `KubeSpawner` to launch user notebook servers as individual Kubernetes p
 * **KBase Authentication**: Integrates with KBase for user authentication.
 * **Selectable Server Profiles**: Users can choose from pre-defined server sizes (Small, Medium, Large) with different resource allocations.
 * **Idle Server Culling**: Automatically shuts down user servers after a period of inactivity to conserve resources.
+* **Dynamic Notebook Image**: Supports changing notebook images without hub redeploy via external configuration (mounted secrets/configmaps).
 * **Self-Contained Image**: All code, dependencies, and configurations are bundled into a single Docker image.
+
+## 🔄 Dynamic Notebook Image Configuration
+
+The notebook image used for user servers can be changed without redeploying JupyterHub by using external configuration sources:
+
+1. **Mount a Kubernetes Secret or ConfigMap** containing the image tag
+2. **Update the external source** to change the notebook image  
+3. **New notebook spawns** will automatically use the updated image
+
+See [docs/notebook-image-config.md](docs/notebook-image-config.md) for detailed configuration instructions.
 
 
 ## ⚙️ Runtime Configuration
@@ -35,7 +46,7 @@ The container is configured at runtime using the following environment variables
 | `MINIO_ENDPOINT_URL`                    | The endpoint URL for the MinIO object storage service.    |
 | `SPARK_CLUSTER_MANAGER_API_URL`         | The URL for the Spark Cluster Manager API.                |
 | `BERDL_HIVE_METASTORE_URI`              | The URI for the Hive Metastore service.                   |
-| `BERDL_NOTEBOOK_IMAGE_TAG`              | The BERDL Compatible Notebook tag                         |
+| `BERDL_NOTEBOOK_IMAGE_TAG`              | The BERDL Compatible Notebook tag (fallback if file not found) |
 | `BERDL_SKIP_SPAWN_HOOKS`                | If set, skips the spawn hooks for user notebook servers.  |
 ### Optional Variables
 
@@ -48,6 +59,7 @@ The container is configured at runtime using the following environment variables
 | `MINIO_SECURE_FLAG`                     | `True`           | Whether to use HTTPS for MinIO connections.                                      |
 | `JUPYTERHUB_DEBUG`                      | `False`          | Enable debug mode for JupyterHub.                                                |
 | `JUPYTERHUB_LOG_LEVEL`                  | `INFO`           | Set JupyterHub log level (DEBUG, INFO, WARN, ERROR).                             |
+| `BERDL_NOTEBOOK_IMAGE_TAG_FILE`         | `/etc/berdl/notebook-image-tag` | Path to file containing notebook image tag for external configuration |
 | `ENABLE_IDLE_CULLER`                    | `True`           | Enable idle culler for JupyterHub.                                               |
 | `JUPYTERHUB_MEM_LIMIT_GB`               | `4`              | Memory limit in GB for JupyterHub user containers.                               |
 | `JUPYTERHUB_MEM_GUARANTEE_GB`           | `2`              | Memory guarantee in GB for JupyterHub user containers.                           |
