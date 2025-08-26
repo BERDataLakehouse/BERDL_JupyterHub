@@ -93,31 +93,7 @@ def modify_pod_hook(spawner, pod):
     # Add tolerations if specified
     tolerations_env = os.environ.get("BERDL_TOLERATIONS")
     if tolerations_env:
-        tolerations = []
-        for toleration_str in tolerations_env.split(","):
-            toleration_str = toleration_str.strip()
-            if not toleration_str:
-                continue
-
-            try:
-                if ":" not in toleration_str or "=" not in toleration_str:
-                    raise ValueError("Missing ':' or '=' in toleration format")
-
-                key_value, effect = toleration_str.split(":", 1)
-                key, value = key_value.split("=", 1)
-                tolerations.append(
-                    client.V1Toleration(
-                        key=key,
-                        operator="Equal",
-                        value=value,
-                        effect=effect
-                    )
-                )
-            except ValueError:
-                spawner.log.warning(
-                    f"Invalid toleration format: {toleration_str}. Expected format: key=value:effect"
-                )
-
+        tolerations = parse_tolerations_from_env(tolerations_env, spawner)
         if tolerations:
             pod.spec.tolerations = tolerations
 
