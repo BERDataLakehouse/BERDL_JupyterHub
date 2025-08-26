@@ -11,12 +11,12 @@ class TestStorageConfiguration:
     """Test cases for storage configuration functionality."""
 
     def test_configure_hostpath_storage_with_env_var(self):
-        """Test that storage configuration uses HUB_STORAGE_BASE_PATH environment variable."""
+        """Test that storage configuration uses BERDL_NOTEBOOK_HOMES_DIR environment variable."""
         # Mock configuration object
         mock_config = Mock()
 
         # Test with dev environment path
-        with patch.dict(os.environ, {"HUB_STORAGE_BASE_PATH": "/mnt/state/dev/hub"}):
+        with patch.dict(os.environ, {"BERDL_NOTEBOOK_HOMES_DIR": "/mnt/state/dev/hub"}):
             configure_hostpath_storage(mock_config)
 
             # Verify volumes are configured correctly
@@ -53,7 +53,7 @@ class TestStorageConfiguration:
         mock_config = Mock()
 
         # Test with prod environment path
-        with patch.dict(os.environ, {"HUB_STORAGE_BASE_PATH": "/mnt/state/prod/hub"}):
+        with patch.dict(os.environ, {"BERDL_NOTEBOOK_HOMES_DIR": "/mnt/state/prod/hub"}):
             configure_hostpath_storage(mock_config)
 
             # Verify the user-home volume uses the prod path
@@ -70,7 +70,7 @@ class TestStorageConfiguration:
         mock_config = Mock()
 
         # Test with staging environment path
-        with patch.dict(os.environ, {"HUB_STORAGE_BASE_PATH": "/mnt/state/staging/hub"}):
+        with patch.dict(os.environ, {"BERDL_NOTEBOOK_HOMES_DIR": "/mnt/state/staging/hub"}):
             configure_hostpath_storage(mock_config)
 
             # Verify the paths are correctly constructed
@@ -96,7 +96,7 @@ class TestStorageConfiguration:
         mock_config = Mock()
 
         # Test with a completely different custom path
-        with patch.dict(os.environ, {"HUB_STORAGE_BASE_PATH": "/custom/storage/path"}):
+        with patch.dict(os.environ, {"BERDL_NOTEBOOK_HOMES_DIR": "/custom/storage/path"}):
             configure_hostpath_storage(mock_config)
 
             # Verify the custom path is used

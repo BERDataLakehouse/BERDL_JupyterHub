@@ -10,8 +10,8 @@ from berdlhub.config.validators import validate_environment
 class TestEnvironmentValidation:
     """Test cases for environment variable validation."""
 
-    def test_validate_environment_with_hub_storage_base_path(self):
-        """Test that validation passes when HUB_STORAGE_BASE_PATH is set along with other required vars."""
+    def test_validate_environment_with_berdl_notebook_homes_dir(self):
+        """Test that validation passes when BERDL_NOTEBOOK_HOMES_DIR is set along with other required vars."""
         required_env_vars = {
             "JUPYTERHUB_COOKIE_SECRET_64_HEX_CHARS": "test_secret_64_chars_long_string_here_for_testing_purposes",
             "JUPYTERHUB_TEMPLATES_DIR": "/path/to/templates",
@@ -24,7 +24,7 @@ class TestEnvironmentValidation:
             "BERDL_HIVE_METASTORE_URI": "thrift://hive:9083",
             "BERDL_NOTEBOOK_IMAGE_TAG": "latest",
             "BERDL_SKIP_SPAWN_HOOKS": "false",
-            "HUB_STORAGE_BASE_PATH": "/mnt/state/dev/hub",
+            "BERDL_NOTEBOOK_HOMES_DIR": "/mnt/state/dev/hub",
         }
 
         with patch.dict(os.environ, required_env_vars, clear=True):
@@ -36,8 +36,8 @@ class TestEnvironmentValidation:
                 # Verify success message was logged
                 mock_logger.info.assert_any_call("Environment validation successful!")
 
-    def test_validate_environment_missing_hub_storage_base_path(self):
-        """Test that validation fails when HUB_STORAGE_BASE_PATH is missing."""
+    def test_validate_environment_missing_berdl_notebook_homes_dir(self):
+        """Test that validation fails when BERDL_NOTEBOOK_HOMES_DIR is missing."""
         required_env_vars = {
             "JUPYTERHUB_COOKIE_SECRET_64_HEX_CHARS": "test_secret_64_chars_long_string_here_for_testing_purposes",
             "JUPYTERHUB_TEMPLATES_DIR": "/path/to/templates",
@@ -50,7 +50,7 @@ class TestEnvironmentValidation:
             "BERDL_HIVE_METASTORE_URI": "thrift://hive:9083",
             "BERDL_NOTEBOOK_IMAGE_TAG": "latest",
             "BERDL_SKIP_SPAWN_HOOKS": "false",
-            # HUB_STORAGE_BASE_PATH is intentionally missing
+            # BERDL_NOTEBOOK_HOMES_DIR is intentionally missing
         }
 
         with patch.dict(os.environ, required_env_vars, clear=True):
@@ -61,23 +61,23 @@ class TestEnvironmentValidation:
                 # Verify it exits with status 1
                 assert exc_info.value.code == 1
 
-                # Verify error message includes HUB_STORAGE_BASE_PATH
+                # Verify error message includes BERDL_NOTEBOOK_HOMES_DIR
                 mock_logger.error.assert_any_call("Missing required environment variables:")
                 # Check that the second error call contains our missing variable
                 error_calls = mock_logger.error.call_args_list
                 assert len(error_calls) >= 2
                 missing_vars_message = error_calls[1][0][0]  # Second call, first argument
-                assert "HUB_STORAGE_BASE_PATH" in missing_vars_message
+                assert "BERDL_NOTEBOOK_HOMES_DIR" in missing_vars_message
 
-    def test_validate_environment_hub_storage_base_path_in_required_vars(self):
-        """Test that HUB_STORAGE_BASE_PATH is correctly included in required variables."""
+    def test_validate_environment_berdl_notebook_homes_dir_in_required_vars(self):
+        """Test that BERDL_NOTEBOOK_HOMES_DIR is correctly included in required variables."""
         # This test ensures our addition to the required_vars dict is correct
         from berdlhub.config.validators import validate_environment
         import inspect
 
-        # Get the source code of the function to verify HUB_STORAGE_BASE_PATH is listed
+        # Get the source code of the function to verify BERDL_NOTEBOOK_HOMES_DIR is listed
         source = inspect.getsource(validate_environment)
-        assert "HUB_STORAGE_BASE_PATH" in source
+        assert "BERDL_NOTEBOOK_HOMES_DIR" in source
         assert "Base path for hub storage" in source
 
 

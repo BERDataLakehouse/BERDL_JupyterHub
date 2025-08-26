@@ -26,7 +26,7 @@ def validate_environment():
         "BERDL_NOTEBOOK_IMAGE_TAG": "Docker image tag for the notebook server",
         "BERDL_SKIP_SPAWN_HOOKS": "Skip pre and post spawn hooks. Useful for local dev.",
         # Storage configuration
-        "HUB_STORAGE_BASE_PATH": "Base path for hub storage (e.g., /mnt/state/dev/hub, /mnt/state/prod/hub)",
+        "BERDL_NOTEBOOK_HOMES_DIR": "Base path for hub storage (e.g., /mnt/state/dev/hub, /mnt/state/prod/hub)",
     }
 
     optional_vars = {

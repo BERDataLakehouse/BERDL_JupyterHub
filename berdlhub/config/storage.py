@@ -11,7 +11,7 @@ def configure_hostpath_storage(c):
     logger.warning("Using hostPath storage - this limits scalability to a single node!")
 
     # Get configurable base path for storage
-    storage_base_path = os.environ["HUB_STORAGE_BASE_PATH"]
+    storage_base_path = os.environ["BERDL_NOTEBOOK_HOMES_DIR"]
 
     c.KubeSpawner.volumes = [
         {
