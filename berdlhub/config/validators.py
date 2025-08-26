@@ -25,6 +25,8 @@ def validate_environment():
         "BERDL_HIVE_METASTORE_URI": "Hive metastore URI",
         "BERDL_NOTEBOOK_IMAGE_TAG": "Docker image tag for the notebook server",
         "BERDL_SKIP_SPAWN_HOOKS": "Skip pre and post spawn hooks. Useful for local dev.",
+        # Storage configuration
+        "HUB_STORAGE_BASE_PATH": "Base path for hub storage (e.g., /mnt/state/dev/hub, /mnt/state/prod/hub)",
     }
 
     optional_vars = {
