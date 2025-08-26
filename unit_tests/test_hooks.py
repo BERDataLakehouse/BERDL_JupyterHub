@@ -2,13 +2,15 @@ import os
 from unittest.mock import Mock, patch
 
 
-
 # Mock the dependencies that are not available in test environment
-with patch.dict('sys.modules', {
-    'berdlhub.api_utils.governance_utils': Mock(),
-    'berdlhub.api_utils.spark_utils': Mock(),
-    'spark_manager_client': Mock(),
-}):
+with patch.dict(
+    "sys.modules",
+    {
+        "berdlhub.api_utils.governance_utils": Mock(),
+        "berdlhub.api_utils.spark_utils": Mock(),
+        "spark_manager_client": Mock(),
+    },
+):
     from berdlhub.config.hooks import modify_pod_hook
 
 
@@ -39,7 +41,7 @@ class TestModifyPodHook:
             "BERDL_CPU_REQUEST",
             "BERDL_CPU_LIMIT",
             "BERDL_MEMORY_REQUEST",
-            "BERDL_MEMORY_LIMIT"
+            "BERDL_MEMORY_LIMIT",
         ]
 
         for expected_var in expected_env_vars:
@@ -87,7 +89,7 @@ class TestModifyPodHook:
             result = modify_pod_hook(spawner, pod)
 
             # Verify toleration is added
-            assert hasattr(result.spec, 'tolerations')
+            assert hasattr(result.spec, "tolerations")
             assert len(result.spec.tolerations) == 1
 
             toleration = result.spec.tolerations[0]
@@ -114,7 +116,7 @@ class TestModifyPodHook:
             result = modify_pod_hook(spawner, pod)
 
             # Verify tolerations are added
-            assert hasattr(result.spec, 'tolerations')
+            assert hasattr(result.spec, "tolerations")
             assert len(result.spec.tolerations) == 2
 
             # Check first toleration
@@ -149,7 +151,7 @@ class TestModifyPodHook:
             result = modify_pod_hook(spawner, pod)
 
             # Verify tolerations are added correctly despite spaces
-            assert hasattr(result.spec, 'tolerations')
+            assert hasattr(result.spec, "tolerations")
             assert len(result.spec.tolerations) == 2
 
     def test_modify_pod_hook_invalid_toleration_format(self):
@@ -175,7 +177,7 @@ class TestModifyPodHook:
             assert "invalid_format" in warning_call[0][0]
 
             # Verify valid toleration is still added
-            assert hasattr(result.spec, 'tolerations')
+            assert hasattr(result.spec, "tolerations")
             assert len(result.spec.tolerations) == 1
             assert result.spec.tolerations[0].value == "dev"
 
@@ -219,7 +221,7 @@ class TestModifyPodHook:
             result = modify_pod_hook(spawner, pod)
 
             # Verify tolerations with different effects
-            assert hasattr(result.spec, 'tolerations')
+            assert hasattr(result.spec, "tolerations")
             assert len(result.spec.tolerations) == 2
 
             effects = [t.effect for t in result.spec.tolerations]

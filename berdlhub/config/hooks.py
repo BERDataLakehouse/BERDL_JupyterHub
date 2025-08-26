@@ -100,6 +100,30 @@ def modify_pod_hook(spawner, pod):
     return pod
 
 
+def parse_tolerations_from_env(tolerations_env: str, spawner) -> list[client.V1Toleration]:
+    """
+    Parse tolerations from a comma-separated environment variable string.
+    Each toleration should be in the format: key=value:effect
+    Example: key1=value1:NoSchedule,key2=value2:PreferNoSchedule
+    """
+    tolerations = []
+    for toleration_str in tolerations_env.split(","):
+        toleration_str = toleration_str.strip()
+        if not toleration_str:
+            continue
+
+        try:
+            if ":" not in toleration_str or "=" not in toleration_str:
+                raise ValueError("Missing ':' or '=' in toleration format")
+
+            key_value, effect = toleration_str.split(":", 1)
+            key, value = key_value.split("=", 1)
+            tolerations.append(client.V1Toleration(key=key, operator="Equal", value=value, effect=effect))
+        except ValueError:
+            spawner.log.warning(f"Invalid toleration format: {toleration_str}. Expected format: key=value:effect")
+    return tolerations
+
+
 def configure_hooks(c):
     c.KubeSpawner.pre_spawn_hook = pre_spawn_hook
     c.KubeSpawner.post_stop_hook = post_stop_hook
