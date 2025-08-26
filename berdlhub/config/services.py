@@ -6,7 +6,11 @@ import os
 def configure_services(c):
     """Configure JupyterHub services like idle-culler."""
 
-    services = []
+    services =     [{
+        'name': 'spark-ui',
+        'url': 'http://127.0.0.1:4040',
+        'command': []
+    }]
 
     # Idle culler service
     if os.environ.get("ENABLE_IDLE_CULLER", "true").lower() == "true":
@@ -24,6 +28,8 @@ def configure_services(c):
                 ],
             }
         )
+
+
 
     # Could add other services here
     # - Announcement service
