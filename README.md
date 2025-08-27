@@ -37,6 +37,7 @@ The container is configured at runtime using the following environment variables
 | `BERDL_HIVE_METASTORE_URI`              | The URI for the Hive Metastore service.                   |
 | `BERDL_NOTEBOOK_IMAGE_TAG`              | The BERDL Compatible Notebook tag                         |
 | `BERDL_SKIP_SPAWN_HOOKS`                | If set, skips the spawn hooks for user notebook servers.  |
+| `BERDL_NOTEBOOK_HOMES_DIR`              | Base path for hub storage (e.g., `/mnt/state/dev/hub`, `/mnt/state/prod/hub`). |
 ### Optional Variables
 
 | Variable                                | Default Value    | Description                                                                      |
@@ -64,6 +65,11 @@ The container is configured at runtime using the following environment variables
 **Note**: All required variables **must be set at runtime**. Optional variables will use their default values if not provided.
 
 # User Guide
+* Link to Read the docs
+
+# Dev Guide
+* See the [localdev/README.md](local_dev/README.md) file for guidelines
+
 
 # Development
 
