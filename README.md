@@ -12,7 +12,7 @@ It uses `KubeSpawner` to launch user notebook servers as individual Kubernetes p
 
 * **Kubernetes Native**: Deploys directly to a Kubernetes cluster, with user servers running in isolated pods.
 * **Dynamic User Servers**: Uses `KubeSpawner` to dynamically create and manage notebook servers.
-* **KBase Authentication**: Integrates with KBase for user authentication.
+* **KBase Authentication**: Integrates with KBase for user authentication with built-in user blocking for system-reserved usernames.
 * **Selectable Server Profiles**: Users can choose from pre-defined server sizes (Small, Medium, Large) with different resource allocations.
 * **Idle Server Culling**: Automatically shuts down user servers after a period of inactivity to conserve resources.
 * **Self-Contained Image**: All code, dependencies, and configurations are bundled into a single Docker image.
