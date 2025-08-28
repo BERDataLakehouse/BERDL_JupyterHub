@@ -4,7 +4,7 @@ import os
 from jupyterhub.auth import Authenticator
 from traitlets import List
 
-from berdlhub.auth.kb_auth import KBaseAuth, MissingTokenError, AdminPermission
+from berdlhub.auth.kb_auth import KBaseAuth, MissingTokenError, BlockedUserError, AdminPermission
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +49,11 @@ class KBaseAuthenticator(Authenticator):
         kb_user = await kb_auth.get_user(session_token)
 
         logger.info(f"Authenticated user: {kb_user.user}")
+
+        # Block specific users that would conflict with system resources
+        if str(kb_user.user) == "global_share":
+            raise BlockedUserError(f"User '{kb_user.user}' is blocked from accessing the system")
+
         return {
             "name": str(kb_user.user),
             "admin": kb_user.admin_perm == AdminPermission.FULL,
