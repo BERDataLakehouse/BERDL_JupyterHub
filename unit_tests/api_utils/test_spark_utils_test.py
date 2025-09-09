@@ -113,7 +113,6 @@ class TestSparkClusterManager:
             with pytest.raises(KeyError):
                 SparkClusterManager("test-token")
 
-
     @pytest.mark.asyncio
     async def test_raise_api_error(self, manager):
         """Test API error handling."""
