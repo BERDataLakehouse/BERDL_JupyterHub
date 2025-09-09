@@ -107,6 +107,32 @@ class SparkClusterManager:
         self.logger = logging.getLogger(__name__)
         self.client = AuthenticatedClient(base_url=self.api_url, token=kbase_auth_token)
 
+    def _get_profile_slug_from_spawner(self, spawner) -> str:
+        """Get the profile slug from spawner, with fallback to 'small'."""
+        profile_list = spawner.profile_list or []
+
+        if not profile_list:
+            return "small"  # default fallback
+
+        # Get the profile slug from user_options
+        if spawner.user_options and "profile" in spawner.user_options:
+            profile_slug = spawner.user_options["profile"]
+
+            # Verify the profile exists in the profile_list
+            for profile in profile_list:
+                if profile.get("slug") == profile_slug:
+                    self.logger.info(f"Profile matched by slug: {profile_slug}")
+                    return profile_slug
+
+            # Log if no matching profile found
+            available_slugs = [p.get("slug") for p in profile_list if p.get("slug")]
+            self.logger.info(f"No profile found with slug '{profile_slug}'. Available profiles: {available_slugs}")
+
+        # Default to first profile's slug or 'small'
+        first_profile_slug = profile_list[0].get("slug", "small") if profile_list else "small"
+        self.logger.info(f"Using default profile slug: {first_profile_slug}")
+        return first_profile_slug
+
     async def _raise_api_error(self, response: Response, operation: str):
         """
         Process API error response and raise appropriate exception.
@@ -239,6 +265,8 @@ class SparkClusterManager:
         """
         Create a Spark cluster for the user (async method for spawner integration).
 
+        Automatically determines cluster configuration based on the selected JupyterHub profile.
+
         Args:
             spawner: JupyterHub spawner instance
 
@@ -250,15 +278,43 @@ class SparkClusterManager:
         """
         username = spawner.user.name
         try:
-            self.logger.info(f"Creating Spark cluster for user {username}")
-            response = await self.create_cluster()
+            # Get the profile slug from the spawner
+            profile_slug = self._get_profile_slug_from_spawner(spawner)
+            self.logger.info(f"Creating Spark cluster for user {username} with profile '{profile_slug}'")
+
+            # Get cluster configuration from the profile
+            cluster_config = ClusterDefaults.from_profile(profile_slug)
+
+            # Create cluster with profile-specific configuration
+            response = await self.create_cluster(
+                worker_count=cluster_config.worker_count,
+                worker_cores=cluster_config.worker_cores,
+                worker_memory=cluster_config.worker_memory,
+                master_cores=cluster_config.master_cores,
+                master_memory=cluster_config.master_memory,
+            )
 
             master_url = getattr(response, "master_url", None)
             if not master_url:
                 raise SparkClusterError(f"Master URL not found in response: {response}")
 
             self.logger.info(f"Spark cluster created with master URL: {master_url}")
+
+            # Set cluster configuration as environment variables for the notebook
             spawner.environment["SPARK_MASTER_URL"] = master_url
+            spawner.environment["SPARK_WORKER_COUNT"] = str(cluster_config.worker_count)
+            spawner.environment["SPARK_WORKER_CORES"] = str(cluster_config.worker_cores)
+            spawner.environment["SPARK_WORKER_MEMORY"] = cluster_config.worker_memory
+            spawner.environment["SPARK_MASTER_CORES"] = str(cluster_config.master_cores)
+            spawner.environment["SPARK_MASTER_MEMORY"] = cluster_config.master_memory
+
+            self.logger.info(
+                f"Set cluster environment variables: "
+                f"workers={cluster_config.worker_count}x{cluster_config.worker_cores}cores/"
+                f"{cluster_config.worker_memory}, "
+                f"master={cluster_config.master_cores}cores/{cluster_config.master_memory}"
+            )
+
             return master_url
 
         except Exception as e:

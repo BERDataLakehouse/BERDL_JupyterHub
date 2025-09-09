@@ -20,13 +20,6 @@ def configure_profiles(c):
                 "cpu_limit": 1,
                 "cpu_guarantee": 0.5,
                 "image": berdl_image,
-                "environment": {
-                    "DEFAULT_WORKER_COUNT": "1",
-                    "DEFAULT_WORKER_CORES": "1",
-                    "DEFAULT_WORKER_MEMORY": "2GiB",
-                    "DEFAULT_MASTER_CORES": "1",
-                    "DEFAULT_MASTER_MEMORY": "1GiB",
-                },
             },
         },
         {
@@ -41,13 +34,6 @@ def configure_profiles(c):
                 "cpu_limit": 2,
                 "cpu_guarantee": 1,
                 "image": berdl_image,
-                "environment": {
-                    "DEFAULT_WORKER_COUNT": "4",
-                    "DEFAULT_WORKER_CORES": "1",
-                    "DEFAULT_WORKER_MEMORY": "8GiB",
-                    "DEFAULT_MASTER_CORES": "1",
-                    "DEFAULT_MASTER_MEMORY": "8GiB",
-                },
             },
         },
         {
@@ -62,13 +48,6 @@ def configure_profiles(c):
                 "cpu_limit": 4,
                 "cpu_guarantee": 2,
                 "image": berdl_image,
-                "environment": {
-                    "DEFAULT_WORKER_COUNT": "4",
-                    "DEFAULT_WORKER_CORES": "1",
-                    "DEFAULT_WORKER_MEMORY": "32GiB",
-                    "DEFAULT_MASTER_CORES": "1",
-                    "DEFAULT_MASTER_MEMORY": "16GiB",
-                },
             },
         },
     ]

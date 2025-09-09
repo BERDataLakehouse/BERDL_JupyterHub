@@ -3,7 +3,7 @@ import os
 from kubernetes import client
 
 from berdlhub.api_utils.governance_utils import GovernanceUtils
-from berdlhub.api_utils.spark_utils import ClusterDefaults, SparkClusterManager
+from berdlhub.api_utils.spark_utils import SparkClusterManager
 
 
 async def _get_auth_token(spawner) -> str:
@@ -18,51 +18,6 @@ async def _get_auth_token(spawner) -> str:
         spawner.log.error("KBase token not found in auth_state.")
         raise RuntimeError("KBase authentication token is missing from auth_state.")
     return kb_auth_token
-
-
-def _get_profile_slug(spawner) -> str:
-    """Get the profile slug from spawner, with fallback to 'small'."""
-    profile_list = spawner.profile_list or []
-
-    if not profile_list:
-        return "small"  # default fallback
-
-    # Get the profile slug from user_options
-    if spawner.user_options and "profile" in spawner.user_options:
-        profile_slug = spawner.user_options["profile"]
-
-        # Verify the profile exists in the profile_list
-        for profile in profile_list:
-            if profile.get("slug") == profile_slug:
-                spawner.log.info(f"Profile matched by slug: {profile_slug}")
-                return profile_slug
-
-        # Log if no matching profile found
-        available_slugs = [p.get("slug") for p in profile_list if p.get("slug")]
-        spawner.log.info(f"No profile found with slug '{profile_slug}'. Available profiles: {available_slugs}")
-
-    # Default to first profile's slug or 'small'
-    first_profile_slug = profile_list[0].get("slug", "small") if profile_list else "small"
-    spawner.log.info(f"Using default profile slug: {first_profile_slug}")
-    return first_profile_slug
-
-
-def _get_cluster_defaults_environment(spawner) -> dict:
-    """Get environment variables from ClusterDefaults based on selected profile."""
-    profile_slug = _get_profile_slug(spawner)
-    cluster_defaults = ClusterDefaults.from_profile(profile_slug)
-
-    # Convert cluster defaults to environment variables
-    env = {
-        "DEFAULT_WORKER_COUNT": str(cluster_defaults.worker_count),
-        "DEFAULT_WORKER_CORES": str(cluster_defaults.worker_cores),
-        "DEFAULT_WORKER_MEMORY": cluster_defaults.worker_memory,
-        "DEFAULT_MASTER_CORES": str(cluster_defaults.master_cores),
-        "DEFAULT_MASTER_MEMORY": cluster_defaults.master_memory,
-    }
-
-    spawner.log.info(f"Using cluster defaults for profile '{profile_slug}': {env}")
-    return env
 
 
 def _get_profile_environment(spawner) -> dict:
@@ -118,12 +73,9 @@ async def pre_spawn_hook(spawner):
     # Get profile-specific environment from selected profile
     profile_env = _get_profile_environment(spawner)
 
-    # Get cluster defaults environment based on profile slug
-    cluster_defaults_env = _get_cluster_defaults_environment(spawner)
-
-    # Merge all environments: spawner -> profile -> cluster defaults
-    # This allows profile environment to override defaults, and cluster defaults to fill in missing values
-    merged_env = {**spawner.environment, **profile_env, **cluster_defaults_env}
+    # Merge spawner environment with profile environment
+    # Note: SparkClusterManager now handles cluster configuration internally via profile detection
+    merged_env = {**spawner.environment, **profile_env}
 
     await SparkClusterManager(kb_auth_token, user_options=merged_env).start_spark_cluster(spawner)
 
@@ -139,8 +91,7 @@ async def post_stop_hook(spawner):
         return
     # Get profile-specific environment for consistency
     profile_env = _get_profile_environment(spawner)
-    cluster_defaults_env = _get_cluster_defaults_environment(spawner)
-    merged_env = {**spawner.environment, **profile_env, **cluster_defaults_env}
+    merged_env = {**spawner.environment, **profile_env}
     await SparkClusterManager(kb_auth_token, user_options=merged_env).stop_spark_cluster(spawner)
 
 
