@@ -28,7 +28,10 @@ class ClusterDefaults:
 
     @classmethod
     def from_environment(cls) -> "ClusterDefaults":
-        """Load defaults from os.environ."""
+        """
+        Load defaults from the global os.environ.
+        For loading from a custom environment dictionary, use from_environment_dict().
+        """
         return cls.from_environment_dict(os.environ)
 
     @classmethod
