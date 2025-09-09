@@ -39,13 +39,13 @@ def _get_profile_environment(spawner) -> dict:
             explicit_slug = profile.get("slug")
             if explicit_slug and explicit_slug == profile_slug:
                 selected_profile = profile
-                spawner.log.debug(f"Profile matched by slug: {explicit_slug}")
+                spawner.log.info(f"Profile matched by slug: {explicit_slug}")
                 break
 
         # Log if no matching profile found
         if selected_profile is None:
             available_slugs = [p.get("slug") for p in profile_list]
-            spawner.log.error(f"No profile found with slug '{profile_slug}'. Available profiles: {available_slugs}")
+            spawner.log.info(f"No profile found with slug '{profile_slug}'. Available profiles: {available_slugs}")
 
     # Default to first profile if no match found
     if selected_profile is None:
