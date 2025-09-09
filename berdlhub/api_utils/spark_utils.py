@@ -28,13 +28,18 @@ class ClusterDefaults:
 
     @classmethod
     def from_environment(cls) -> "ClusterDefaults":
-        """Load defaults from environment variables."""
+        """Load defaults from os.environ."""
+        return cls.from_environment_dict(os.environ)
+
+    @classmethod
+    def from_environment_dict(cls, env_dict) -> "ClusterDefaults":
+        """Load defaults from provided environment dictionary."""
         return cls(
-            worker_count=int(os.environ.get("DEFAULT_WORKER_COUNT", 2)),
-            worker_cores=int(os.environ.get("DEFAULT_WORKER_CORES", 1)),
-            worker_memory=os.environ.get("DEFAULT_WORKER_MEMORY", "10GiB"),
-            master_cores=int(os.environ.get("DEFAULT_MASTER_CORES", 1)),
-            master_memory=os.environ.get("DEFAULT_MASTER_MEMORY", "2GiB"),
+            worker_count=int(env_dict.get("DEFAULT_WORKER_COUNT", 2)),
+            worker_cores=int(env_dict.get("DEFAULT_WORKER_CORES", 1)),
+            worker_memory=env_dict.get("DEFAULT_WORKER_MEMORY", "10GiB"),
+            master_cores=int(env_dict.get("DEFAULT_MASTER_CORES", 1)),
+            master_memory=env_dict.get("DEFAULT_MASTER_MEMORY", "2GiB"),
         )
 
 
@@ -52,20 +57,24 @@ class SparkClusterManager:
     with integration support for JupyterHub spawners.
     """
 
-    def __init__(self, kbase_auth_token: str, api_url: Optional[str] = None):
+    def __init__(self, kbase_auth_token: str, api_url: Optional[str] = None, environment: Optional[dict] = None):
         """
         Initialize the AsyncSparkClusterManager with authentication.
 
         Args:
             kbase_auth_token: KBase authentication token (required)
             api_url: Optional API URL, defaults to SPARK_CLUSTER_MANAGER_API_URL env var
+            environment: Optional environment dict for cluster defaults (defaults to os.environ)
 
         Raises:
             KeyError: If the SPARK_CLUSTER_MANAGER_API_URL is not set and an api_url is not provided
         """
         self.kbase_auth_token = kbase_auth_token
         self.api_url = api_url or os.environ["SPARK_CLUSTER_MANAGER_API_URL"]
-        self.defaults = ClusterDefaults.from_environment()
+
+        # Use provided environment or fall back to os.environ
+        env = environment or os.environ
+        self.defaults = ClusterDefaults.from_environment_dict(env)
         self.logger = logging.getLogger(__name__)
         self.client = AuthenticatedClient(base_url=self.api_url, token=kbase_auth_token)
 

@@ -31,7 +31,7 @@ async def pre_spawn_hook(spawner):
         return
 
     await GovernanceUtils(kb_auth_token).set_governance_credentials(spawner)
-    await SparkClusterManager(kb_auth_token).start_spark_cluster(spawner)
+    await SparkClusterManager(kb_auth_token, environment=spawner.environment).start_spark_cluster(spawner)
 
 
 async def post_stop_hook(spawner):
@@ -43,7 +43,7 @@ async def post_stop_hook(spawner):
     if os.environ["BERDL_SKIP_SPAWN_HOOKS"].lower() == "true":
         spawner.log.info("Skipping post-stop hook due to BERDL_SKIP_SPAWN_HOOKS environment variable.")
         return
-    await SparkClusterManager(kb_auth_token).stop_spark_cluster(spawner)
+    await SparkClusterManager(kb_auth_token, environment=spawner.environment).stop_spark_cluster(spawner)
 
 
 def modify_pod_hook(spawner, pod):
