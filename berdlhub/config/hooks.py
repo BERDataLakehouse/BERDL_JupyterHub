@@ -63,15 +63,18 @@ def _get_profile_environment(spawner) -> dict:
             # JupyterHub generates slugs from display_name
             display_name = profile.get("display_name", "")
             # Convert display name to slug (lowercase, replace spaces/special chars with -)
+            import re
             generated_slug = (
                 display_name.lower()
                 .replace(" ", "-")
                 .replace("(", "")
                 .replace(")", "")
                 .replace(",", "")
-                .replace("+", "")
+                .replace("+", "-")
                 .replace(":", "")
             )
+            # Remove consecutive dashes
+            generated_slug = re.sub(r'-+', '-', generated_slug)
 
             spawner.log.info(f"DEBUG: Profile {i}: display_name='{display_name}', generated_slug='{generated_slug}'")
 
