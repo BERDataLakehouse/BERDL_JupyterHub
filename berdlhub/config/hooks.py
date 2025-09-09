@@ -1,4 +1,5 @@
 import os
+import re
 
 from kubernetes import client
 
@@ -23,31 +24,8 @@ async def _get_auth_token(spawner) -> str:
 def _get_profile_environment(spawner) -> dict:
     """Extract environment variables from the selected profile."""
     profile_list = spawner.profile_list or []
-    spawner.log.info(f"DEBUG: Profile list length: {len(profile_list)}")
-    spawner.log.info(f"DEBUG: user_options (full): {spawner.user_options}")
-
-    # Let's explore all spawner attributes that might contain profile info
-    profile_attrs = [attr for attr in dir(spawner) if "profile" in attr.lower()]
-    spawner.log.info(f"DEBUG: All spawner attrs with 'profile': {profile_attrs}")
-
-    # Check if there are other ways to access the selected profile
-    if hasattr(spawner, "_profile"):
-        spawner.log.info(f"DEBUG: spawner._profile: {spawner._profile}")
-    if hasattr(spawner, "profile"):
-        spawner.log.info(f"DEBUG: spawner.profile: {spawner.profile}")
-    if hasattr(spawner, "profile_list_selection"):
-        spawner.log.info(f"DEBUG: spawner.profile_list_selection: {spawner.profile_list_selection}")
-
-    # Let's also check what's actually in the profile_list to understand the structure
-    for i, profile in enumerate(profile_list):
-        spawner.log.info(f"DEBUG: Profile {i} keys: {list(profile.keys())}")
-        if "slug" in profile:
-            spawner.log.info(f"DEBUG: Profile {i} has slug: {profile['slug']}")
-        if "value" in profile:
-            spawner.log.info(f"DEBUG: Profile {i} has value: {profile['value']}")
 
     if not profile_list:
-        spawner.log.info("DEBUG: No profile list found")
         return {}
 
     selected_profile = None
@@ -56,45 +34,46 @@ def _get_profile_environment(spawner) -> dict:
     # Get the profile slug from user_options
     if spawner.user_options and "profile" in spawner.user_options:
         profile_slug = spawner.user_options["profile"]
-        spawner.log.info(f"DEBUG: Looking for profile slug: {profile_slug}")
 
         # Find the profile by matching the slug
         for i, profile in enumerate(profile_list):
-            # JupyterHub generates slugs from display_name
+            # JupyterHub generates slugs from display_name by converting to lowercase
+            # and replacing spaces/special chars with dashes
+            #
+            # Examples from real profile display_names:
+            # "Small: 1 Worker (2GB, 1 core) + Master (1GB, 1 core)"
+            #   -> "small-1-worker-2gb-1-core-master-1gb-1-core"
+            # "Medium: 4 Workers (8GB, 1 core each) + Master (8GB, 1 core)"
+            #   -> "medium-4-workers-8gb-1-core-each-master-8gb-1-core"
+            # "Large: 4 Workers (32GB, 1 core each) + Master (16GB, 1 core)"
+            #   -> "large-4-workers-32gb-1-core-each-master-16gb-1-core"
             display_name = profile.get("display_name", "")
-            # Convert display name to slug (lowercase, replace spaces/special chars with -)
-            import re
 
             generated_slug = (
-                display_name.lower()
-                .replace(" ", "-")
-                .replace("(", "")
-                .replace(")", "")
-                .replace(",", "")
-                .replace("+", "-")
-                .replace(":", "")
+                display_name.lower()  # Convert to lowercase
+                .replace(" ", "-")  # Spaces become dashes
+                .replace("(", "")  # Remove opening parentheses
+                .replace(")", "")  # Remove closing parentheses
+                .replace(",", "")  # Remove commas
+                .replace("+", "-")  # Plus signs become dashes
+                .replace(":", "")  # Remove colons
             )
-            # Remove consecutive dashes
+            # Remove consecutive dashes (e.g., "each--master" -> "each-master")
             generated_slug = re.sub(r"-+", "-", generated_slug)
 
             spawner.log.info(f"DEBUG: Profile {i}: display_name='{display_name}', generated_slug='{generated_slug}'")
 
             if generated_slug == profile_slug:
                 selected_profile = profile
-                spawner.log.info(f"DEBUG: Found matching profile at index {i}: {profile}")
                 break
 
     # Default to first profile if no match found
     if selected_profile is None:
         selected_profile = profile_list[0]
-        spawner.log.info(
-            f"DEBUG: No matching profile found for slug '{profile_slug}', using first profile: {selected_profile}"
-        )
 
     kubespawner_override = selected_profile.get("kubespawner_override", {})
     profile_environment = kubespawner_override.get("environment", {})
 
-    spawner.log.info(f"DEBUG: Profile environment extracted: {profile_environment}")
     return profile_environment
 
 
@@ -110,16 +89,11 @@ async def pre_spawn_hook(spawner):
 
     await GovernanceUtils(kb_auth_token).set_governance_credentials(spawner)
 
-    # Debug: Log current environment variables
-    spawner.log.info(f"DEBUG: Current spawner.environment: {dict(spawner.environment)}")
-
     # Get profile-specific environment from selected profile
     profile_env = _get_profile_environment(spawner)
-    spawner.log.info(f"DEBUG: Profile environment: {profile_env}")
 
     # Merge spawner environment with profile environment
     merged_env = {**spawner.environment, **profile_env}
-    spawner.log.info(f"DEBUG: Merged environment for SparkClusterManager: {merged_env}")
 
     await SparkClusterManager(kb_auth_token, environment=merged_env).start_spark_cluster(spawner)
 
