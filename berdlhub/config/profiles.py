@@ -32,8 +32,8 @@ def configure_profiles(c):
             "display_name": "Medium: 4 Workers (8GB, 1 core each) + Master (8GB, 1 core)",
             "description": "Balanced Spark cluster for medium data processing workloads",
             "kubespawner_override": {
-                "mem_limit": "8G",
-                "mem_guarantee": "4G",
+                "mem_limit": "40G",
+                "mem_guarantee": "20G",
                 "cpu_limit": 2,
                 "cpu_guarantee": 1,
                 "image": berdl_image,
