@@ -97,6 +97,9 @@ This project uses [uv](https://docs.astral.sh/uv/) for Python package management
    
    # Or install with development dependencies (recommended for development)
    uv sync --locked --inexact
+   
+   # If you encounter import errors for cdm-spark-manager-client, force reinstall
+   uv sync --reinstall
    ```
 
 ### Running Tests
