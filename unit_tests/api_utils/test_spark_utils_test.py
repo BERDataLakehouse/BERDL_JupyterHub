@@ -42,34 +42,41 @@ class TestClusterDefaults:
         assert defaults.master_cores == 2
         assert defaults.master_memory == "4GiB"
 
-    @patch.dict(
-        os.environ,
-        {
-            "DEFAULT_WORKER_COUNT": "5",
-            "DEFAULT_WORKER_CORES": "3",
-            "DEFAULT_WORKER_MEMORY": "15GiB",
-            "DEFAULT_MASTER_CORES": "2",
-            "DEFAULT_MASTER_MEMORY": "3GiB",
-        },
-    )
-    def test_from_environment_with_env_vars(self):
-        """Test loading from environment variables."""
-        defaults = ClusterDefaults.from_environment()
-        assert defaults.worker_count == 5
-        assert defaults.worker_cores == 3
-        assert defaults.worker_memory == "15GiB"
-        assert defaults.master_cores == 2
-        assert defaults.master_memory == "3GiB"
-
-    @patch.dict(os.environ, {}, clear=True)
-    def test_from_environment_without_env_vars(self):
-        """Test loading from environment without variables set."""
-        defaults = ClusterDefaults.from_environment()
-        assert defaults.worker_count == 2
+    def test_from_profile_small(self):
+        """Test loading from small profile."""
+        defaults = ClusterDefaults.from_profile("small")
+        assert defaults.worker_count == 1
         assert defaults.worker_cores == 1
-        assert defaults.worker_memory == "10GiB"
+        assert defaults.worker_memory == "2GiB"
         assert defaults.master_cores == 1
-        assert defaults.master_memory == "2GiB"
+        assert defaults.master_memory == "1GiB"
+
+    def test_from_profile_medium(self):
+        """Test loading from medium profile."""
+        defaults = ClusterDefaults.from_profile("medium")
+        assert defaults.worker_count == 4
+        assert defaults.worker_cores == 1
+        assert defaults.worker_memory == "8GiB"
+        assert defaults.master_cores == 1
+        assert defaults.master_memory == "8GiB"
+
+    def test_from_profile_large(self):
+        """Test loading from large profile."""
+        defaults = ClusterDefaults.from_profile("large")
+        assert defaults.worker_count == 4
+        assert defaults.worker_cores == 1
+        assert defaults.worker_memory == "32GiB"
+        assert defaults.master_cores == 1
+        assert defaults.master_memory == "16GiB"
+
+    def test_from_profile_unknown_fallback(self):
+        """Test loading from unknown profile falls back to small."""
+        defaults = ClusterDefaults.from_profile("unknown")
+        assert defaults.worker_count == 1
+        assert defaults.worker_cores == 1
+        assert defaults.worker_memory == "2GiB"
+        assert defaults.master_cores == 1
+        assert defaults.master_memory == "1GiB"
 
 
 class TestSparkClusterManager:
@@ -106,38 +113,6 @@ class TestSparkClusterManager:
             with pytest.raises(KeyError):
                 SparkClusterManager("test-token")
 
-    def test_build_cluster_config_defaults(self, manager):
-        """Test building cluster config with default values."""
-        config = manager._build_cluster_config()
-        assert config.worker_count == 2
-        assert config.worker_cores == 1
-        assert config.worker_memory == "10GiB"
-        assert config.master_cores == 1
-        assert config.master_memory == "2GiB"
-
-    def test_build_cluster_config_custom_values(self, manager):
-        """Test building cluster config with custom values."""
-        config = manager._build_cluster_config(
-            worker_count=4,
-            worker_cores=2,
-            worker_memory="20GiB",
-            master_cores=2,
-            master_memory="4GiB",
-        )
-        assert config.worker_count == 4
-        assert config.worker_cores == 2
-        assert config.worker_memory == "20GiB"
-        assert config.master_cores == 2
-        assert config.master_memory == "4GiB"
-
-    def test_build_cluster_config_partial_values(self, manager):
-        """Test building cluster config with some custom values."""
-        config = manager._build_cluster_config(worker_count=3, worker_memory="15GiB")
-        assert config.worker_count == 3
-        assert config.worker_cores == 1  # default
-        assert config.worker_memory == "15GiB"
-        assert config.master_cores == 1  # default
-        assert config.master_memory == "2GiB"  # default
 
     @pytest.mark.asyncio
     async def test_raise_api_error(self, manager):
@@ -177,7 +152,13 @@ class TestSparkClusterManager:
         manager.client.__aenter__ = AsyncMock(return_value=manager.client)
         manager.client.__aexit__ = AsyncMock(return_value=None)
 
-        result = await manager.create_cluster(worker_count=3)
+        result = await manager.create_cluster(
+            worker_count=3,
+            worker_cores=2,
+            worker_memory="8GiB",
+            master_cores=1,
+            master_memory="4GiB",
+        )
 
         assert result.master_url == "spark://test:7077"
         mock_create.assert_called_once()
