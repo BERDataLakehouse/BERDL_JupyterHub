@@ -26,24 +26,51 @@ class ClusterDefaults:
     master_cores: int = 1
     master_memory: str = "2GiB"
 
-    @classmethod
-    def from_environment(cls) -> "ClusterDefaults":
-        """
-        Load defaults from the global os.environ.
-        For loading from a custom environment dictionary, use from_environment_dict().
-        """
-        return cls.from_environment_dict(os.environ)
+    # Profile configurations
+    PROFILES = {
+        "small": {
+            "worker_count": 1,
+            "worker_cores": 1,
+            "worker_memory": "2GiB",
+            "master_cores": 1,
+            "master_memory": "1GiB",
+        },
+        "medium": {
+            "worker_count": 4,
+            "worker_cores": 1,
+            "worker_memory": "8GiB",
+            "master_cores": 1,
+            "master_memory": "8GiB",
+        },
+        "large": {
+            "worker_count": 4,
+            "worker_cores": 1,
+            "worker_memory": "32GiB",
+            "master_cores": 1,
+            "master_memory": "16GiB",
+        },
+    }
 
     @classmethod
-    def from_environment_dict(cls, env_dict) -> "ClusterDefaults":
-        """Load defaults from provided environment dictionary."""
+    def from_environment(cls, user_options=None) -> "ClusterDefaults":
+        """Load defaults from user options or environment variables."""
+        user_options = user_options or os.environ
         return cls(
-            worker_count=int(env_dict.get("DEFAULT_WORKER_COUNT", 2)),
-            worker_cores=int(env_dict.get("DEFAULT_WORKER_CORES", 1)),
-            worker_memory=env_dict.get("DEFAULT_WORKER_MEMORY", "10GiB"),
-            master_cores=int(env_dict.get("DEFAULT_MASTER_CORES", 1)),
-            master_memory=env_dict.get("DEFAULT_MASTER_MEMORY", "2GiB"),
+            worker_count=int(user_options.get("DEFAULT_WORKER_COUNT", 1)),
+            worker_cores=int(user_options.get("DEFAULT_WORKER_CORES", 1)),
+            worker_memory=user_options.get("DEFAULT_WORKER_MEMORY", "2GiB"),
+            master_cores=int(user_options.get("DEFAULT_MASTER_CORES", 1)),
+            master_memory=user_options.get("DEFAULT_MASTER_MEMORY", "1GiB"),
         )
+
+    @classmethod
+    def from_profile(cls, profile_slug: str) -> "ClusterDefaults":
+        """Load defaults from a predefined profile."""
+        if profile_slug not in cls.PROFILES:
+            profile_slug = "small"  # fallback to default
+
+        profile_config = cls.PROFILES[profile_slug]
+        return cls(**profile_config)
 
 
 class SparkClusterError(Exception):
@@ -60,14 +87,14 @@ class SparkClusterManager:
     with integration support for JupyterHub spawners.
     """
 
-    def __init__(self, kbase_auth_token: str, api_url: Optional[str] = None, environment: Optional[dict] = None):
+    def __init__(self, kbase_auth_token: str, api_url: Optional[str] = None, user_options: Optional[dict] = None):
         """
         Initialize the AsyncSparkClusterManager with authentication.
 
         Args:
             kbase_auth_token: KBase authentication token (required)
             api_url: Optional API URL, defaults to SPARK_CLUSTER_MANAGER_API_URL env var
-            environment: Optional environment dict for cluster defaults (defaults to os.environ)
+            user_options: Optional user options dict for cluster defaults (defaults to os.environ)
 
         Raises:
             KeyError: If the SPARK_CLUSTER_MANAGER_API_URL is not set and an api_url is not provided
@@ -75,9 +102,8 @@ class SparkClusterManager:
         self.kbase_auth_token = kbase_auth_token
         self.api_url = api_url or os.environ["SPARK_CLUSTER_MANAGER_API_URL"]
 
-        # Use provided environment or fall back to os.environ
-        env = environment or os.environ
-        self.defaults = ClusterDefaults.from_environment_dict(env)
+        # Use provided user options or fall back to os.environ
+        self.defaults = ClusterDefaults.from_environment(user_options)
         self.logger = logging.getLogger(__name__)
         self.client = AuthenticatedClient(base_url=self.api_url, token=kbase_auth_token)
 
