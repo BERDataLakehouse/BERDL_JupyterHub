@@ -297,6 +297,8 @@ class TestSparkClusterManager:
         mock_spawner = Mock()
         mock_spawner.user.name = "testuser"
         mock_spawner.environment = {}
+        mock_spawner.profile_list = [{"slug": "small", "display_name": "Small"}]
+        mock_spawner.user_options = {"profile": "small"}
 
         # Mock create_cluster method
         mock_response = SparkClusterCreateResponse(
@@ -318,6 +320,8 @@ class TestSparkClusterManager:
         # Mock spawner
         mock_spawner = Mock()
         mock_spawner.user.name = "testuser"
+        mock_spawner.profile_list = [{"slug": "small", "display_name": "Small"}]
+        mock_spawner.user_options = {"profile": "small"}
 
         # Mock create_cluster method with response without master_url
         mock_response = Mock()
@@ -333,6 +337,8 @@ class TestSparkClusterManager:
         # Mock spawner
         mock_spawner = Mock()
         mock_spawner.user.name = "testuser"
+        mock_spawner.profile_list = [{"slug": "small", "display_name": "Small"}]
+        mock_spawner.user_options = {"profile": "small"}
 
         # Mock create_cluster method to raise exception
         manager.create_cluster = AsyncMock(side_effect=SparkClusterError("Creation failed"))
@@ -389,6 +395,8 @@ class TestSparkClusterManagerIntegration:
         mock_spawner = Mock()
         mock_spawner.user.name = "testuser"
         mock_spawner.environment = {}
+        mock_spawner.profile_list = [{"slug": "small", "display_name": "Small"}]
+        mock_spawner.user_options = {"profile": "small"}
 
         # Mock create_cluster
         create_response = SparkClusterCreateResponse(
