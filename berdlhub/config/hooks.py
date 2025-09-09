@@ -22,47 +22,70 @@ async def _get_auth_token(spawner) -> str:
 
 def _get_profile_environment(spawner) -> dict:
     """Extract environment variables from the selected profile."""
-    # Debug: Log all available attributes on spawner
-    spawner.log.info(f"DEBUG: Spawner attributes: {[attr for attr in dir(spawner) if 'profile' in attr.lower()]}")
-
-    # Check multiple ways to get the selected profile
     profile_list = spawner.profile_list or []
     spawner.log.info(f"DEBUG: Profile list length: {len(profile_list)}")
-    spawner.log.info(f"DEBUG: user_options: {spawner.user_options}")
+    spawner.log.info(f"DEBUG: user_options (full): {spawner.user_options}")
 
-    # Try different ways to get the selected profile index
-    selected_profile_idx = None
+    # Let's explore all spawner attributes that might contain profile info
+    profile_attrs = [attr for attr in dir(spawner) if "profile" in attr.lower()]
+    spawner.log.info(f"DEBUG: All spawner attrs with 'profile': {profile_attrs}")
 
-    # Method 1: profile_list_selection
+    # Check if there are other ways to access the selected profile
+    if hasattr(spawner, "_profile"):
+        spawner.log.info(f"DEBUG: spawner._profile: {spawner._profile}")
+    if hasattr(spawner, "profile"):
+        spawner.log.info(f"DEBUG: spawner.profile: {spawner.profile}")
     if hasattr(spawner, "profile_list_selection"):
-        selected_profile_idx = spawner.profile_list_selection
-        spawner.log.info(f"DEBUG: profile_list_selection: {selected_profile_idx}")
+        spawner.log.info(f"DEBUG: spawner.profile_list_selection: {spawner.profile_list_selection}")
 
-    # Method 2: user_options (this is more likely to work)
-    if spawner.user_options and "profile" in spawner.user_options:
-        raw_profile = spawner.user_options["profile"]
-        spawner.log.info(f"DEBUG: user_options profile (raw): {raw_profile} (type: {type(raw_profile)})")
+    # Let's also check what's actually in the profile_list to understand the structure
+    for i, profile in enumerate(profile_list):
+        spawner.log.info(f"DEBUG: Profile {i} keys: {list(profile.keys())}")
+        if "slug" in profile:
+            spawner.log.info(f"DEBUG: Profile {i} has slug: {profile['slug']}")
+        if "value" in profile:
+            spawner.log.info(f"DEBUG: Profile {i} has value: {profile['value']}")
 
-        # Try to convert to int
-        try:
-            selected_profile_idx = int(raw_profile)
-            spawner.log.info(f"DEBUG: user_options profile (converted to int): {selected_profile_idx}")
-        except (ValueError, TypeError):
-            spawner.log.info(f"DEBUG: Could not parse profile as int: {raw_profile}")
-
-    # Default to 0 if nothing found
-    if selected_profile_idx is None:
-        selected_profile_idx = 0
-        spawner.log.info("DEBUG: Defaulting to profile index 0")
-
-    spawner.log.info(f"DEBUG: Final selected_profile_idx: {selected_profile_idx} (type: {type(selected_profile_idx)})")
-
-    if not profile_list or not isinstance(selected_profile_idx, int) or selected_profile_idx >= len(profile_list):
-        spawner.log.info("DEBUG: No valid profile found, returning empty dict")
+    if not profile_list:
+        spawner.log.info("DEBUG: No profile list found")
         return {}
 
-    selected_profile = profile_list[selected_profile_idx]
-    spawner.log.info(f"DEBUG: Selected profile: {selected_profile}")
+    selected_profile = None
+    profile_slug = None
+
+    # Get the profile slug from user_options
+    if spawner.user_options and "profile" in spawner.user_options:
+        profile_slug = spawner.user_options["profile"]
+        spawner.log.info(f"DEBUG: Looking for profile slug: {profile_slug}")
+
+        # Find the profile by matching the slug
+        for i, profile in enumerate(profile_list):
+            # JupyterHub generates slugs from display_name
+            display_name = profile.get("display_name", "")
+            # Convert display name to slug (lowercase, replace spaces/special chars with -)
+            generated_slug = (
+                display_name.lower()
+                .replace(" ", "-")
+                .replace("(", "")
+                .replace(")", "")
+                .replace(",", "")
+                .replace("+", "")
+                .replace(":", "")
+            )
+
+            spawner.log.info(f"DEBUG: Profile {i}: display_name='{display_name}', generated_slug='{generated_slug}'")
+
+            if generated_slug == profile_slug:
+                selected_profile = profile
+                spawner.log.info(f"DEBUG: Found matching profile at index {i}: {profile}")
+                break
+
+    # Default to first profile if no match found
+    if selected_profile is None:
+        selected_profile = profile_list[0]
+        spawner.log.info(
+            f"DEBUG: No matching profile found for slug '{profile_slug}', using first profile: {selected_profile}"
+        )
 
     kubespawner_override = selected_profile.get("kubespawner_override", {})
     profile_environment = kubespawner_override.get("environment", {})
