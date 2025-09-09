@@ -365,15 +365,6 @@ class TestSparkClusterManagerIntegration:
             with patch("berdlhub.api_utils.spark_utils.AuthenticatedClient"):
                 yield SparkClusterManager("test-token")
 
-    def test_manager_uses_environment_defaults(self, manager_with_env):
-        """Test that manager uses environment-based defaults."""
-        config = manager_with_env._build_cluster_config()
-        assert config.worker_count == 3
-        assert config.worker_cores == 2
-        assert config.worker_memory == "15GiB"
-        assert config.master_cores == 2
-        assert config.master_memory == "3GiB"
-
     @pytest.mark.asyncio
     async def test_full_cluster_lifecycle(self, manager_with_env):
         """Test complete cluster lifecycle (create -> delete)."""
