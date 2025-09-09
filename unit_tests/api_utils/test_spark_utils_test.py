@@ -181,7 +181,13 @@ class TestSparkClusterManager:
             SparkClusterError,
             match="Cluster creation failed \\(HTTP 400\\): Invalid config",
         ):
-            await manager.create_cluster()
+            await manager.create_cluster(
+                worker_count=2,
+                worker_cores=1,
+                worker_memory="10GiB",
+                master_cores=1,
+                master_memory="2GiB",
+            )
 
     @pytest.mark.asyncio
     @patch("berdlhub.api_utils.spark_utils.delete_cluster_clusters_delete.asyncio_detailed")
