@@ -12,6 +12,7 @@ def configure_profiles(c):
         {
             "display_name": "Small: 1 Worker (2GB, 1 core) + Master (1GB, 1 core)",
             "description": "Minimal Spark cluster for light analysis and development",
+            "slug": "small",
             "default": True,
             "kubespawner_override": {
                 "mem_limit": "2G",
@@ -31,6 +32,7 @@ def configure_profiles(c):
         {
             "display_name": "Medium: 4 Workers (8GB, 1 core each) + Master (8GB, 1 core)",
             "description": "Balanced Spark cluster for medium data processing workloads",
+            "slug": "medium",
             "kubespawner_override": {
                 "mem_limit": "40G",
                 "mem_guarantee": "20G",
@@ -49,6 +51,7 @@ def configure_profiles(c):
         {
             "display_name": "Large: 4 Workers (32GB, 1 core each) + Master (16GB, 1 core)",
             "description": "High-performance Spark cluster for large datasets and heavy computation",
+            "slug": "large",
             "kubespawner_override": {
                 "mem_limit": "144G",
                 "mem_guarantee": "72G",

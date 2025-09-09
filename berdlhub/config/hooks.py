@@ -1,5 +1,4 @@
 import os
-import re
 
 from kubernetes import client
 
@@ -35,41 +34,23 @@ def _get_profile_environment(spawner) -> dict:
     if spawner.user_options and "profile" in spawner.user_options:
         profile_slug = spawner.user_options["profile"]
 
-        # Find the profile by matching the slug
-        for i, profile in enumerate(profile_list):
-            # JupyterHub generates slugs from display_name by converting to lowercase
-            # and replacing spaces/special chars with dashes
-            #
-            # Examples from real profile display_names:
-            # "Small: 1 Worker (2GB, 1 core) + Master (1GB, 1 core)"
-            #   -> "small-1-worker-2gb-1-core-master-1gb-1-core"
-            # "Medium: 4 Workers (8GB, 1 core each) + Master (8GB, 1 core)"
-            #   -> "medium-4-workers-8gb-1-core-each-master-8gb-1-core"
-            # "Large: 4 Workers (32GB, 1 core each) + Master (16GB, 1 core)"
-            #   -> "large-4-workers-32gb-1-core-each-master-16gb-1-core"
-            display_name = profile.get("display_name", "")
-
-            generated_slug = (
-                display_name.lower()  # Convert to lowercase
-                .replace(" ", "-")  # Spaces become dashes
-                .replace("(", "")  # Remove opening parentheses
-                .replace(")", "")  # Remove closing parentheses
-                .replace(",", "")  # Remove commas
-                .replace("+", "-")  # Plus signs become dashes
-                .replace(":", "")  # Remove colons
-            )
-            # Remove consecutive dashes (e.g., "each--master" -> "each-master")
-            generated_slug = re.sub(r"-+", "-", generated_slug)
-
-            spawner.log.info(f"DEBUG: Profile {i}: display_name='{display_name}', generated_slug='{generated_slug}'")
-
-            if generated_slug == profile_slug:
+        # Find the profile by matching the explicit slug
+        for profile in profile_list:
+            explicit_slug = profile.get("slug")
+            if explicit_slug and explicit_slug == profile_slug:
                 selected_profile = profile
+                spawner.log.debug(f"Profile matched by slug: {explicit_slug}")
                 break
+
+        # Log if no matching profile found
+        if selected_profile is None:
+            available_slugs = [p.get("slug") for p in profile_list]
+            spawner.log.error(f"No profile found with slug '{profile_slug}'. Available profiles: {available_slugs}")
 
     # Default to first profile if no match found
     if selected_profile is None:
         selected_profile = profile_list[0]
+        spawner.log.info(f"Using default profile: {selected_profile.get('display_name')}")
 
     kubespawner_override = selected_profile.get("kubespawner_override", {})
     profile_environment = kubespawner_override.get("environment", {})
