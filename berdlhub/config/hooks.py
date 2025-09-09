@@ -72,12 +72,10 @@ async def pre_spawn_hook(spawner):
 
     # Get profile-specific environment from selected profile
     profile_env = _get_profile_environment(spawner)
+    spawner.environment.update(profile_env)
 
-    # Merge spawner environment with profile environment
     # Note: SparkClusterManager now handles cluster configuration internally via profile detection
-    merged_env = {**spawner.environment, **profile_env}
-
-    await SparkClusterManager(kb_auth_token, user_options=merged_env).start_spark_cluster(spawner)
+    await SparkClusterManager(kb_auth_token).start_spark_cluster(spawner)
 
 
 async def post_stop_hook(spawner):
@@ -91,8 +89,8 @@ async def post_stop_hook(spawner):
         return
     # Get profile-specific environment for consistency
     profile_env = _get_profile_environment(spawner)
-    merged_env = {**spawner.environment, **profile_env}
-    await SparkClusterManager(kb_auth_token, user_options=merged_env).stop_spark_cluster(spawner)
+    spawner.environment.update(profile_env)
+    await SparkClusterManager(kb_auth_token).stop_spark_cluster(spawner)
 
 
 def modify_pod_hook(spawner, pod):
