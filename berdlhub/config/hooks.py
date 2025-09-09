@@ -20,6 +20,21 @@ async def _get_auth_token(spawner) -> str:
     return kb_auth_token
 
 
+def _get_profile_environment(spawner) -> dict:
+    """Extract environment variables from the selected profile."""
+    profile_list = spawner.profile_list or []
+    selected_profile_idx = getattr(spawner, "profile_list_selection", 0) or 0
+
+    if not profile_list or selected_profile_idx >= len(profile_list):
+        return {}
+
+    selected_profile = profile_list[selected_profile_idx]
+    kubespawner_override = selected_profile.get("kubespawner_override", {})
+    profile_environment = kubespawner_override.get("environment", {})
+
+    return profile_environment
+
+
 async def pre_spawn_hook(spawner):
     """
     Hook to create a Spark cluster before the user's server starts.
@@ -31,7 +46,18 @@ async def pre_spawn_hook(spawner):
         return
 
     await GovernanceUtils(kb_auth_token).set_governance_credentials(spawner)
-    await SparkClusterManager(kb_auth_token, environment=spawner.environment).start_spark_cluster(spawner)
+
+    # Debug: Log current environment variables
+    spawner.log.debug(f"Current spawner.environment: {dict(spawner.environment)}")
+
+    # Get profile-specific environment from selected profile
+    profile_env = _get_profile_environment(spawner)
+    spawner.log.debug(f"Profile environment: {profile_env}")
+
+    # Merge spawner environment with profile environment
+    merged_env = {**spawner.environment, **profile_env}
+
+    await SparkClusterManager(kb_auth_token, environment=merged_env).start_spark_cluster(spawner)
 
 
 async def post_stop_hook(spawner):
@@ -43,7 +69,10 @@ async def post_stop_hook(spawner):
     if os.environ["BERDL_SKIP_SPAWN_HOOKS"].lower() == "true":
         spawner.log.info("Skipping post-stop hook due to BERDL_SKIP_SPAWN_HOOKS environment variable.")
         return
-    await SparkClusterManager(kb_auth_token, environment=spawner.environment).stop_spark_cluster(spawner)
+    # Get profile-specific environment for consistency
+    profile_env = _get_profile_environment(spawner)
+    merged_env = {**spawner.environment, **profile_env}
+    await SparkClusterManager(kb_auth_token, environment=merged_env).stop_spark_cluster(spawner)
 
 
 def modify_pod_hook(spawner, pod):
