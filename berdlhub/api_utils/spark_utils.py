@@ -26,16 +26,39 @@ class ClusterDefaults:
     master_cores: int = 1
     master_memory: str = "2GiB"
 
+    # Profile configurations
+    PROFILES = {
+        "small": {
+            "worker_count": 1,
+            "worker_cores": 1,
+            "worker_memory": "2GiB",
+            "master_cores": 1,
+            "master_memory": "1GiB",
+        },
+        "medium": {
+            "worker_count": 4,
+            "worker_cores": 1,
+            "worker_memory": "8GiB",
+            "master_cores": 1,
+            "master_memory": "8GiB",
+        },
+        "large": {
+            "worker_count": 4,
+            "worker_cores": 1,
+            "worker_memory": "32GiB",
+            "master_cores": 1,
+            "master_memory": "16GiB",
+        },
+    }
+
     @classmethod
-    def from_environment(cls) -> "ClusterDefaults":
-        """Load defaults from environment variables."""
-        return cls(
-            worker_count=int(os.environ.get("DEFAULT_WORKER_COUNT", 2)),
-            worker_cores=int(os.environ.get("DEFAULT_WORKER_CORES", 1)),
-            worker_memory=os.environ.get("DEFAULT_WORKER_MEMORY", "10GiB"),
-            master_cores=int(os.environ.get("DEFAULT_MASTER_CORES", 1)),
-            master_memory=os.environ.get("DEFAULT_MASTER_MEMORY", "2GiB"),
-        )
+    def from_profile(cls, profile_slug: str) -> "ClusterDefaults":
+        """Load defaults from a predefined profile."""
+        if profile_slug not in cls.PROFILES:
+            profile_slug = "small"  # fallback to default
+
+        profile_config = cls.PROFILES[profile_slug]
+        return cls(**profile_config)
 
 
 class SparkClusterError(Exception):
@@ -65,9 +88,34 @@ class SparkClusterManager:
         """
         self.kbase_auth_token = kbase_auth_token
         self.api_url = api_url or os.environ["SPARK_CLUSTER_MANAGER_API_URL"]
-        self.defaults = ClusterDefaults.from_environment()
         self.logger = logging.getLogger(__name__)
         self.client = AuthenticatedClient(base_url=self.api_url, token=kbase_auth_token)
+
+    def _get_profile_slug_from_spawner(self, spawner) -> str:
+        """Get the profile slug from spawner, with fallback to 'small'."""
+        profile_list = spawner.profile_list or []
+
+        if not profile_list:
+            return "small"  # default fallback
+
+        # Get the profile slug from user_options
+        if spawner.user_options and "profile" in spawner.user_options:
+            profile_slug = spawner.user_options["profile"]
+
+            # Verify the profile exists in the profile_list
+            for profile in profile_list:
+                if profile.get("slug") == profile_slug:
+                    self.logger.info(f"Profile matched by slug: {profile_slug}")
+                    return profile_slug
+
+            # Log if no matching profile found
+            available_slugs = [p.get("slug") for p in profile_list if p.get("slug")]
+            self.logger.info(f"No profile found with slug '{profile_slug}'. Available profiles: {available_slugs}")
+
+        # Default to first profile's slug or 'small'
+        first_profile_slug = profile_list[0].get("slug", "small") if profile_list else "small"
+        self.logger.info(f"Using default profile slug: {first_profile_slug}")
+        return first_profile_slug
 
     async def _raise_api_error(self, response: Response, operation: str):
         """
@@ -88,52 +136,23 @@ class SparkClusterManager:
         self.logger.error(error_message)
         raise SparkClusterError(error_message)
 
-    def _build_cluster_config(
-        self,
-        worker_count: Optional[int] = None,
-        worker_cores: Optional[int] = None,
-        worker_memory: Optional[str] = None,
-        master_cores: Optional[int] = None,
-        master_memory: Optional[str] = None,
-    ) -> SparkClusterConfig:
-        """
-        Build cluster configuration with provided values or defaults.
-
-        Args:
-            worker_count: Number of worker nodes
-            worker_cores: CPU cores per worker
-            worker_memory: Memory per worker
-            master_cores: CPU cores for master
-            master_memory: Memory for master
-
-        Returns:
-            SparkClusterConfig: Configuration object for cluster creation
-        """
-        return SparkClusterConfig(
-            worker_count=(worker_count if worker_count is not None else self.defaults.worker_count),
-            worker_cores=(worker_cores if worker_cores is not None else self.defaults.worker_cores),
-            worker_memory=worker_memory or self.defaults.worker_memory,
-            master_cores=(master_cores if master_cores is not None else self.defaults.master_cores),
-            master_memory=master_memory or self.defaults.master_memory,
-        )
-
     async def create_cluster(
         self,
-        worker_count: Optional[int] = None,
-        worker_cores: Optional[int] = None,
-        worker_memory: Optional[str] = None,
-        master_cores: Optional[int] = None,
-        master_memory: Optional[str] = None,
+        worker_count: int,
+        worker_cores: int,
+        worker_memory: str,
+        master_cores: int,
+        master_memory: str,
     ) -> SparkClusterCreateResponse:
         """
         Create a new Spark cluster with the given configuration.
 
         Args:
-            worker_count: Number of worker nodes (defaults from environment)
-            worker_cores: CPU cores per worker (defaults from environment)
-            worker_memory: Memory per worker (defaults from environment)
-            master_cores: CPU cores for master (defaults from environment)
-            master_memory: Memory for master (defaults from environment)
+            worker_count: Number of worker nodes (required)
+            worker_cores: CPU cores per worker (required)
+            worker_memory: Memory per worker (required)
+            master_cores: CPU cores for master (required)
+            master_memory: Memory for master (required)
 
         Returns:
             SparkClusterCreateResponse: Cluster creation response with master URL
@@ -141,7 +160,13 @@ class SparkClusterManager:
         Raises:
             SparkClusterError: If cluster creation fails
         """
-        config = self._build_cluster_config(worker_count, worker_cores, worker_memory, master_cores, master_memory)
+        config = SparkClusterConfig(
+            worker_count=worker_count,
+            worker_cores=worker_cores,
+            worker_memory=worker_memory,
+            master_cores=master_cores,
+            master_memory=master_memory,
+        )
 
         async with self.client as client:
             response: Response[SparkClusterCreateResponse] = await create_cluster_clusters_post.asyncio_detailed(
@@ -201,6 +226,8 @@ class SparkClusterManager:
         """
         Create a Spark cluster for the user (async method for spawner integration).
 
+        Automatically determines cluster configuration based on the selected JupyterHub profile.
+
         Args:
             spawner: JupyterHub spawner instance
 
@@ -212,15 +239,43 @@ class SparkClusterManager:
         """
         username = spawner.user.name
         try:
-            self.logger.info(f"Creating Spark cluster for user {username}")
-            response = await self.create_cluster()
+            # Get the profile slug from the spawner
+            profile_slug = self._get_profile_slug_from_spawner(spawner)
+            self.logger.info(f"Creating Spark cluster for user {username} with profile '{profile_slug}'")
+
+            # Get cluster configuration from the profile
+            cluster_config = ClusterDefaults.from_profile(profile_slug)
+
+            # Create cluster with profile-specific configuration
+            response = await self.create_cluster(
+                worker_count=cluster_config.worker_count,
+                worker_cores=cluster_config.worker_cores,
+                worker_memory=cluster_config.worker_memory,
+                master_cores=cluster_config.master_cores,
+                master_memory=cluster_config.master_memory,
+            )
 
             master_url = getattr(response, "master_url", None)
             if not master_url:
                 raise SparkClusterError(f"Master URL not found in response: {response}")
 
             self.logger.info(f"Spark cluster created with master URL: {master_url}")
+
+            # Set cluster configuration as environment variables for the notebook
             spawner.environment["SPARK_MASTER_URL"] = master_url
+            spawner.environment["SPARK_WORKER_COUNT"] = str(cluster_config.worker_count)
+            spawner.environment["SPARK_WORKER_CORES"] = str(cluster_config.worker_cores)
+            spawner.environment["SPARK_WORKER_MEMORY"] = cluster_config.worker_memory
+            spawner.environment["SPARK_MASTER_CORES"] = str(cluster_config.master_cores)
+            spawner.environment["SPARK_MASTER_MEMORY"] = cluster_config.master_memory
+
+            self.logger.info(
+                f"Set cluster environment variables: "
+                f"workers={cluster_config.worker_count}x{cluster_config.worker_cores}cores/"
+                f"{cluster_config.worker_memory}, "
+                f"master={cluster_config.master_cores}cores/{cluster_config.master_memory}"
+            )
+
             return master_url
 
         except Exception as e:

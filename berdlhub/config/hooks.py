@@ -20,6 +20,44 @@ async def _get_auth_token(spawner) -> str:
     return kb_auth_token
 
 
+def _get_profile_environment(spawner) -> dict:
+    """Extract environment variables from the selected profile."""
+    profile_list = spawner.profile_list or []
+
+    if not profile_list:
+        return {}
+
+    selected_profile = None
+    profile_slug = None
+
+    # Get the profile slug from user_options
+    if spawner.user_options and "profile" in spawner.user_options:
+        profile_slug = spawner.user_options["profile"]
+
+        # Find the profile by matching the explicit slug
+        for profile in profile_list:
+            explicit_slug = profile.get("slug")
+            if explicit_slug and explicit_slug == profile_slug:
+                selected_profile = profile
+                spawner.log.info(f"Profile matched by slug: {explicit_slug}")
+                break
+
+        # Log if no matching profile found
+        if selected_profile is None:
+            available_slugs = [p.get("slug") for p in profile_list]
+            spawner.log.info(f"No profile found with slug '{profile_slug}'. Available profiles: {available_slugs}")
+
+    # Default to first profile if no match found
+    if selected_profile is None:
+        selected_profile = profile_list[0]
+        spawner.log.info(f"Using default profile: {selected_profile.get('display_name')}")
+
+    kubespawner_override = selected_profile.get("kubespawner_override", {})
+    profile_environment = kubespawner_override.get("environment", {})
+
+    return profile_environment
+
+
 async def pre_spawn_hook(spawner):
     """
     Hook to create a Spark cluster before the user's server starts.
@@ -31,6 +69,12 @@ async def pre_spawn_hook(spawner):
         return
 
     await GovernanceUtils(kb_auth_token).set_governance_credentials(spawner)
+
+    # Get profile-specific environment from selected profile
+    profile_env = _get_profile_environment(spawner)
+    spawner.environment.update(profile_env)
+
+    # Note: SparkClusterManager now handles cluster configuration internally via profile detection
     await SparkClusterManager(kb_auth_token).start_spark_cluster(spawner)
 
 
@@ -43,6 +87,9 @@ async def post_stop_hook(spawner):
     if os.environ["BERDL_SKIP_SPAWN_HOOKS"].lower() == "true":
         spawner.log.info("Skipping post-stop hook due to BERDL_SKIP_SPAWN_HOOKS environment variable.")
         return
+    # Get profile-specific environment for consistency
+    profile_env = _get_profile_environment(spawner)
+    spawner.environment.update(profile_env)
     await SparkClusterManager(kb_auth_token).stop_spark_cluster(spawner)
 
 
