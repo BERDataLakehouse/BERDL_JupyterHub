@@ -56,11 +56,11 @@ class ClusterDefaults:
         """Load defaults from user options or environment variables."""
         user_options = user_options or os.environ
         return cls(
-            worker_count=int(user_options.get("DEFAULT_WORKER_COUNT", 1)),
+            worker_count=int(user_options.get("DEFAULT_WORKER_COUNT", 2)),
             worker_cores=int(user_options.get("DEFAULT_WORKER_CORES", 1)),
-            worker_memory=user_options.get("DEFAULT_WORKER_MEMORY", "2GiB"),
+            worker_memory=user_options.get("DEFAULT_WORKER_MEMORY", "10GiB"),
             master_cores=int(user_options.get("DEFAULT_MASTER_CORES", 1)),
-            master_memory=user_options.get("DEFAULT_MASTER_MEMORY", "1GiB"),
+            master_memory=user_options.get("DEFAULT_MASTER_MEMORY", "2GiB"),
         )
 
     @classmethod
