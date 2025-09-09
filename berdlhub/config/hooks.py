@@ -39,25 +39,24 @@ def _get_profile_environment(spawner) -> dict:
 
     # Method 2: user_options (this is more likely to work)
     if spawner.user_options and "profile" in spawner.user_options:
-        selected_profile_idx = spawner.user_options["profile"]
-        spawner.log.debug(f"user_options profile: {selected_profile_idx}")
+        raw_profile = spawner.user_options["profile"]
+        spawner.log.debug(f"user_options profile (raw): {raw_profile} (type: {type(raw_profile)})")
 
-    # Method 3: Check for profile in user_options as string
-    if spawner.user_options and isinstance(spawner.user_options.get("profile"), str):
+        # Try to convert to int
         try:
-            selected_profile_idx = int(spawner.user_options["profile"])
-            spawner.log.debug(f"user_options profile (parsed as int): {selected_profile_idx}")
+            selected_profile_idx = int(raw_profile)
+            spawner.log.debug(f"user_options profile (converted to int): {selected_profile_idx}")
         except (ValueError, TypeError):
-            spawner.log.debug(f"Could not parse profile as int: {spawner.user_options.get('profile')}")
+            spawner.log.debug(f"Could not parse profile as int: {raw_profile}")
 
     # Default to 0 if nothing found
     if selected_profile_idx is None:
         selected_profile_idx = 0
         spawner.log.debug("Defaulting to profile index 0")
 
-    spawner.log.debug(f"Final selected_profile_idx: {selected_profile_idx}")
+    spawner.log.debug(f"Final selected_profile_idx: {selected_profile_idx} (type: {type(selected_profile_idx)})")
 
-    if not profile_list or selected_profile_idx >= len(profile_list):
+    if not profile_list or not isinstance(selected_profile_idx, int) or selected_profile_idx >= len(profile_list):
         spawner.log.debug("No valid profile found, returning empty dict")
         return {}
 
