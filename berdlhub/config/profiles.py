@@ -47,7 +47,7 @@ def configure_profiles(c):
             },
         },
         {
-            "display_name": "Large: 4 Workers (32GB, 1 cores each) + Master (16GB, 1 core)",
+            "display_name": "Large: 4 Workers (32GB, 1 core each) + Master (16GB, 1 core)",
             "description": "High-performance Spark cluster for large datasets and heavy computation",
             "kubespawner_override": {
                 "mem_limit": "32G",
