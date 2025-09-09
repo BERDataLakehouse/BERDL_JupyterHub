@@ -24,8 +24,8 @@ def configure_profiles(c):
                     "DEFAULT_WORKER_CORES": "1",
                     "DEFAULT_WORKER_MEMORY": "2GiB",
                     "DEFAULT_MASTER_CORES": "1",
-                    "DEFAULT_MASTER_MEMORY": "1GiB"
-                }
+                    "DEFAULT_MASTER_MEMORY": "1GiB",
+                },
             },
         },
         {
@@ -42,8 +42,8 @@ def configure_profiles(c):
                     "DEFAULT_WORKER_CORES": "1",
                     "DEFAULT_WORKER_MEMORY": "8GiB",
                     "DEFAULT_MASTER_CORES": "1",
-                    "DEFAULT_MASTER_MEMORY": "8GiB"
-                }
+                    "DEFAULT_MASTER_MEMORY": "8GiB",
+                },
             },
         },
         {
@@ -60,8 +60,8 @@ def configure_profiles(c):
                     "DEFAULT_WORKER_CORES": "1",
                     "DEFAULT_WORKER_MEMORY": "32GiB",
                     "DEFAULT_MASTER_CORES": "1",
-                    "DEFAULT_MASTER_MEMORY": "16GiB"
-                }
+                    "DEFAULT_MASTER_MEMORY": "16GiB",
+                },
             },
         },
     ]
