@@ -22,16 +22,52 @@ async def _get_auth_token(spawner) -> str:
 
 def _get_profile_environment(spawner) -> dict:
     """Extract environment variables from the selected profile."""
+    # Debug: Log all available attributes on spawner
+    spawner.log.debug(f"Spawner attributes: {[attr for attr in dir(spawner) if 'profile' in attr.lower()]}")
+
+    # Check multiple ways to get the selected profile
     profile_list = spawner.profile_list or []
-    selected_profile_idx = getattr(spawner, "profile_list_selection", 0) or 0
+    spawner.log.debug(f"Profile list length: {len(profile_list)}")
+
+    # Try different ways to get the selected profile index
+    selected_profile_idx = None
+
+    # Method 1: profile_list_selection
+    if hasattr(spawner, "profile_list_selection"):
+        selected_profile_idx = spawner.profile_list_selection
+        spawner.log.debug(f"profile_list_selection: {selected_profile_idx}")
+
+    # Method 2: user_options (this is more likely to work)
+    if spawner.user_options and "profile" in spawner.user_options:
+        selected_profile_idx = spawner.user_options["profile"]
+        spawner.log.debug(f"user_options profile: {selected_profile_idx}")
+
+    # Method 3: Check for profile in user_options as string
+    if spawner.user_options and isinstance(spawner.user_options.get("profile"), str):
+        try:
+            selected_profile_idx = int(spawner.user_options["profile"])
+            spawner.log.debug(f"user_options profile (parsed as int): {selected_profile_idx}")
+        except (ValueError, TypeError):
+            spawner.log.debug(f"Could not parse profile as int: {spawner.user_options.get('profile')}")
+
+    # Default to 0 if nothing found
+    if selected_profile_idx is None:
+        selected_profile_idx = 0
+        spawner.log.debug("Defaulting to profile index 0")
+
+    spawner.log.debug(f"Final selected_profile_idx: {selected_profile_idx}")
 
     if not profile_list or selected_profile_idx >= len(profile_list):
+        spawner.log.debug("No valid profile found, returning empty dict")
         return {}
 
     selected_profile = profile_list[selected_profile_idx]
+    spawner.log.debug(f"Selected profile: {selected_profile}")
+
     kubespawner_override = selected_profile.get("kubespawner_override", {})
     profile_environment = kubespawner_override.get("environment", {})
 
+    spawner.log.debug(f"Profile environment extracted: {profile_environment}")
     return profile_environment
 
 
