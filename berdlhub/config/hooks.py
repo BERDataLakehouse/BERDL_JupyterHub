@@ -23,11 +23,12 @@ async def _get_auth_token(spawner) -> str:
 def _get_profile_environment(spawner) -> dict:
     """Extract environment variables from the selected profile."""
     # Debug: Log all available attributes on spawner
-    spawner.log.debug(f"Spawner attributes: {[attr for attr in dir(spawner) if 'profile' in attr.lower()]}")
+    spawner.log.info(f"DEBUG: Spawner attributes: {[attr for attr in dir(spawner) if 'profile' in attr.lower()]}")
 
     # Check multiple ways to get the selected profile
     profile_list = spawner.profile_list or []
-    spawner.log.debug(f"Profile list length: {len(profile_list)}")
+    spawner.log.info(f"DEBUG: Profile list length: {len(profile_list)}")
+    spawner.log.info(f"DEBUG: user_options: {spawner.user_options}")
 
     # Try different ways to get the selected profile index
     selected_profile_idx = None
@@ -35,38 +36,38 @@ def _get_profile_environment(spawner) -> dict:
     # Method 1: profile_list_selection
     if hasattr(spawner, "profile_list_selection"):
         selected_profile_idx = spawner.profile_list_selection
-        spawner.log.debug(f"profile_list_selection: {selected_profile_idx}")
+        spawner.log.info(f"DEBUG: profile_list_selection: {selected_profile_idx}")
 
     # Method 2: user_options (this is more likely to work)
     if spawner.user_options and "profile" in spawner.user_options:
         raw_profile = spawner.user_options["profile"]
-        spawner.log.debug(f"user_options profile (raw): {raw_profile} (type: {type(raw_profile)})")
+        spawner.log.info(f"DEBUG: user_options profile (raw): {raw_profile} (type: {type(raw_profile)})")
 
         # Try to convert to int
         try:
             selected_profile_idx = int(raw_profile)
-            spawner.log.debug(f"user_options profile (converted to int): {selected_profile_idx}")
+            spawner.log.info(f"DEBUG: user_options profile (converted to int): {selected_profile_idx}")
         except (ValueError, TypeError):
-            spawner.log.debug(f"Could not parse profile as int: {raw_profile}")
+            spawner.log.info(f"DEBUG: Could not parse profile as int: {raw_profile}")
 
     # Default to 0 if nothing found
     if selected_profile_idx is None:
         selected_profile_idx = 0
-        spawner.log.debug("Defaulting to profile index 0")
+        spawner.log.info("DEBUG: Defaulting to profile index 0")
 
-    spawner.log.debug(f"Final selected_profile_idx: {selected_profile_idx} (type: {type(selected_profile_idx)})")
+    spawner.log.info(f"DEBUG: Final selected_profile_idx: {selected_profile_idx} (type: {type(selected_profile_idx)})")
 
     if not profile_list or not isinstance(selected_profile_idx, int) or selected_profile_idx >= len(profile_list):
-        spawner.log.debug("No valid profile found, returning empty dict")
+        spawner.log.info("DEBUG: No valid profile found, returning empty dict")
         return {}
 
     selected_profile = profile_list[selected_profile_idx]
-    spawner.log.debug(f"Selected profile: {selected_profile}")
+    spawner.log.info(f"DEBUG: Selected profile: {selected_profile}")
 
     kubespawner_override = selected_profile.get("kubespawner_override", {})
     profile_environment = kubespawner_override.get("environment", {})
 
-    spawner.log.debug(f"Profile environment extracted: {profile_environment}")
+    spawner.log.info(f"DEBUG: Profile environment extracted: {profile_environment}")
     return profile_environment
 
 
@@ -83,14 +84,15 @@ async def pre_spawn_hook(spawner):
     await GovernanceUtils(kb_auth_token).set_governance_credentials(spawner)
 
     # Debug: Log current environment variables
-    spawner.log.debug(f"Current spawner.environment: {dict(spawner.environment)}")
+    spawner.log.info(f"DEBUG: Current spawner.environment: {dict(spawner.environment)}")
 
     # Get profile-specific environment from selected profile
     profile_env = _get_profile_environment(spawner)
-    spawner.log.debug(f"Profile environment: {profile_env}")
+    spawner.log.info(f"DEBUG: Profile environment: {profile_env}")
 
     # Merge spawner environment with profile environment
     merged_env = {**spawner.environment, **profile_env}
+    spawner.log.info(f"DEBUG: Merged environment for SparkClusterManager: {merged_env}")
 
     await SparkClusterManager(kb_auth_token, environment=merged_env).start_spark_cluster(spawner)
 
