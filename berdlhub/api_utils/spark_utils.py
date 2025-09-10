@@ -92,30 +92,15 @@ class SparkClusterManager:
         self.client = AuthenticatedClient(base_url=self.api_url, token=kbase_auth_token)
 
     def _get_profile_slug_from_spawner(self, spawner) -> str:
-        """Get the profile slug from spawner, with fallback to 'small'."""
-        profile_list = spawner.profile_list or []
-
-        if not profile_list:
-            return "small"  # default fallback
-
-        # Get the profile slug from user_options
+        """Get the profile slug from spawner. ClusterDefaults.from_profile will handle fallback."""
+        # Get the profile slug from user_options or use 'small' as default
         if spawner.user_options and "profile" in spawner.user_options:
             profile_slug = spawner.user_options["profile"]
+            self.logger.info(f"Using profile from user options: {profile_slug}")
+            return profile_slug
 
-            # Verify the profile exists in the profile_list
-            for profile in profile_list:
-                if profile.get("slug") == profile_slug:
-                    self.logger.info(f"Profile matched by slug: {profile_slug}")
-                    return profile_slug
-
-            # Log if no matching profile found
-            available_slugs = [p.get("slug") for p in profile_list if p.get("slug")]
-            self.logger.info(f"No profile found with slug '{profile_slug}'. Available profiles: {available_slugs}")
-
-        # Default to first profile's slug or 'small'
-        first_profile_slug = profile_list[0].get("slug", "small") if profile_list else "small"
-        self.logger.info(f"Using default profile slug: {first_profile_slug}")
-        return first_profile_slug
+        self.logger.info("No profile specified in user options, will use default")
+        return "small"
 
     async def _raise_api_error(self, response: Response, operation: str):
         """
