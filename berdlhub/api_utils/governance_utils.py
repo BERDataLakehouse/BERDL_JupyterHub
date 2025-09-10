@@ -35,6 +35,7 @@ class GovernanceUtils:
             # Set successful credentials
             spawner.environment.update(
                 {
+                    "USE_DATA_GOVERNANCE_CREDENTIALS": "true",
                     "MINIO_ACCESS_KEY": creds["access_key"],
                     "MINIO_SECRET_KEY": creds["secret_key"],
                     "MINIO_ENDPOINT": minio_endpoint,

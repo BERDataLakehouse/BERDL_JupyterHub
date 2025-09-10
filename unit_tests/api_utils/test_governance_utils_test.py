@@ -60,6 +60,7 @@ class TestGovernanceUtils:
 
                 # Verify spawner environment
                 expected_env = {
+                    "USE_DATA_GOVERNANCE_CREDENTIALS": "true",
                     "MINIO_ACCESS_KEY": "test_access_key",
                     "MINIO_SECRET_KEY": "test_secret_key",
                     "MINIO_ENDPOINT": "https://minio.example.com",
