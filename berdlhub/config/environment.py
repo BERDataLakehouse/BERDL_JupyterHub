@@ -18,6 +18,7 @@ def configure_environment(c):
         "BERDL_HIVE_METASTORE_URI": os.environ["BERDL_HIVE_METASTORE_URI"],
         # Python settings
         "PIP_USER": "1",  # Force user installs with pip
+        "GOVERNANCE_API_URL": os.environ["GOVERNANCE_API_URL"],
     }
 
     # Jupyter Docker Stacks configuration
