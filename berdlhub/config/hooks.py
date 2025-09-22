@@ -2,7 +2,6 @@ import os
 
 from kubernetes import client
 
-from berdlhub.api_utils.governance_utils import GovernanceUtils
 from berdlhub.api_utils.spark_utils import SparkClusterManager
 
 
@@ -67,8 +66,6 @@ async def pre_spawn_hook(spawner):
     if os.environ["BERDL_SKIP_SPAWN_HOOKS"].lower() == "true":
         spawner.log.info("Skipping pre-spawn hook due to BERDL_SKIP_SPAWN_HOOKS environment variable.")
         return
-
-    await GovernanceUtils(kb_auth_token).set_governance_credentials(spawner)
 
     # Get profile-specific environment from selected profile
     profile_env = _get_profile_environment(spawner)
