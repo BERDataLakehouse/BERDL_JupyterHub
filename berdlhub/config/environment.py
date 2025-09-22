@@ -19,7 +19,7 @@ def configure_environment(c):
         # Python settings
         "PIP_USER": "1",  # Force user installs with pip
         "GOVERNANCE_API_URL": os.environ["GOVERNANCE_API_URL"],
-        "MINIO_ENDPOINT": os.environ["MINIO_ENDPOINT"],
+        "MINIO_ENDPOINT_URL": os.environ["MINIO_ENDPOINT_URL"],
     }
 
     # Jupyter Docker Stacks configuration
