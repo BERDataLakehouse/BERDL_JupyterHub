@@ -6,7 +6,6 @@ from unittest.mock import Mock, patch
 with patch.dict(
     "sys.modules",
     {
-        "berdlhub.api_utils.governance_utils": Mock(),
         "berdlhub.api_utils.spark_utils": Mock(),
         "spark_manager_client": Mock(),
     },
