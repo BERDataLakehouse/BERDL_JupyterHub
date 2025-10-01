@@ -77,7 +77,7 @@ class KBaseAuth:
         user_roles = set(j["customroles"])
 
         # Check if user has an approved role to login
-        if self._approved_roles and not (user_roles & self._approved_roles):
+        if not (user_roles & self._approved_roles):
             logging.info(
                 "User does not have an approved role. User roles: %s, Required roles: %s",
                 user_roles,
