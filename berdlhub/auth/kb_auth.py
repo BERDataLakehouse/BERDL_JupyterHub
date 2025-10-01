@@ -58,10 +58,11 @@ async def _check_error(r):
 class KBaseAuth:
     """A client for contacting the KBase authentication server."""
 
-    def __init__(self, auth_url: str, full_admin_roles: List[str]):
+    def __init__(self, auth_url: str, full_admin_roles: List[str], approved_roles: List[str]):
         self._url = auth_url
         self._me_url = self._url + "api/V2/me"
         self._full_roles = set(full_admin_roles) if full_admin_roles else set()
+        self._approved_roles = set(approved_roles) if approved_roles else set()
 
     async def get_user(self, token: str) -> KBaseUser:
         """
@@ -73,12 +74,20 @@ class KBaseAuth:
         _not_falsy(token, "token")
 
         j = await _get(self._me_url, {"Authorization": token})
-        v = (self._get_role(j["customroles"]), UserID(j["user"]))
+        user_roles = set(j["customroles"])
+
+        # Check if user has an approved role to login
+        if self._approved_roles and not (user_roles & self._approved_roles):
+            raise AuthenticationError(
+                status_code=403,
+                log_message=f"User does not have an approved role. User roles: {user_roles}, Required roles: {self._approved_roles}"
+            )
+
+        v = (self._get_role(user_roles), UserID(j["user"]))
         return KBaseUser(v[1], v[0], token)
 
     def _get_role(self, roles):
-        r = set(roles)
-        if r & self._full_roles:
+        if roles & self._full_roles:
             return AdminPermission.FULL
         return AdminPermission.NONE
 

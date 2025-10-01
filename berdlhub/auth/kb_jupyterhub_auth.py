@@ -30,6 +30,12 @@ class KBaseAuthenticator(Authenticator):
         help="Comma-separated list of KBase roles with full administrative access to JupyterHub.",
     )
 
+    approved_roles = List(
+        default_value=[role.strip() for role in os.getenv("APPROVED_ROLES", "").split(",") if role.strip()],
+        config=True,
+        help="Comma-separated list of KBase roles approved to login to JupyterHub.",
+    )
+
     async def authenticate(self, handler, data=None) -> dict:
         """
         Authenticate user using KBase session cookie and API validation
@@ -45,7 +51,7 @@ class KBaseAuthenticator(Authenticator):
                 f"Authentication required - missing {self.SESSION_COOKIE_NAME} and {self.SESSION_COOKIE_BACKUP} cookie."
             )
 
-        kb_auth = KBaseAuth(self.kbase_auth_url, self.auth_full_admin_roles)
+        kb_auth = KBaseAuth(self.kbase_auth_url, self.auth_full_admin_roles, self.approved_roles)
         kb_user = await kb_auth.get_user(session_token)
 
         logger.info(f"Authenticated user: {kb_user.user}")
