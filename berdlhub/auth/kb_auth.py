@@ -78,12 +78,14 @@ class KBaseAuth:
 
         # Check if user has an approved role to login
         if self._approved_roles and not (user_roles & self._approved_roles):
+            logging.info(
+                "User does not have an approved role. User roles: %s, Required roles: %s",
+                user_roles,
+                self._approved_roles,
+            )
             raise AuthenticationError(
                 status_code=403,
-                log_message=(
-                    f"User does not have an approved role. "
-                    f"User roles: {user_roles}, Required roles: {self._approved_roles}"
-                ),
+                log_message="User does not have an approved role.",
             )
 
         v = (self._get_role(user_roles), UserID(j["user"]))
