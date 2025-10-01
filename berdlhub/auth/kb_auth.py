@@ -92,8 +92,8 @@ class KBaseAuth:
         return KBaseUser(v[1], v[0], token)
 
     def _get_role(self, roles):
-        roles = set(roles)
-        if roles & self._full_roles:
+        r = set(roles)
+        if r & self._full_roles:
             return AdminPermission.FULL
         return AdminPermission.NONE
 
