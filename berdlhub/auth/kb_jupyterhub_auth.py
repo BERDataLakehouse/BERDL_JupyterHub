@@ -33,7 +33,7 @@ class KBaseAuthenticator(Authenticator):
     approved_roles = List(
         default_value=[role.strip() for role in os.getenv("APPROVED_ROLES", "").split(",") if role.strip()],
         config=True,
-        help="List of KBase roles allowed to log in to JupyterHub (can be supplied via the APPROVED_ROLES environment variable as a comma-separated string).",
+        help="Comma-separated list of KBase roles approved to login to JupyterHub.",
     )
 
     async def authenticate(self, handler, data=None) -> dict:
