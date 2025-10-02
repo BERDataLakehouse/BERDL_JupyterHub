@@ -83,9 +83,13 @@ class KBaseAuth:
                 user_roles,
                 self._approved_roles,
             )
+            required_roles = ", ".join(sorted(self._approved_roles))
             raise AuthenticationError(
                 status_code=403,
-                log_message="User does not have an approved role.",
+                log_message=(
+                    f"Access denied. Your account requires one of the following roles: {required_roles}. "
+                    "Please contact the KBASE or BERDL administrators for assistance."
+                ),
             )
 
         v = (self._get_role(user_roles), UserID(j["user"]))
