@@ -1,8 +1,11 @@
 # Set the base image
 FROM jupyterhub/jupyterhub:5.3.0
 
-# Required for installing python packages from git
-RUN apt-get update && apt-get install -y git
+# Upgrade Node.js to fix configurable-http-proxy compatibility
+RUN apt-get update && apt-get install -y curl git && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    npm install -g configurable-http-proxy
 
 # --- Environment Configuration ---
 # Define variables for all key paths
