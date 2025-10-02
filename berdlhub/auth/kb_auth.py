@@ -131,3 +131,15 @@ class MissingTokenError(AuthenticationError):
             *args,
             **kwargs,
         )
+
+
+class BlockedUserError(AuthenticationError):
+    """An error thrown when a user is blocked from accessing the system."""
+
+    def __init__(self, log_message=None, *args, **kwargs):
+        super().__init__(
+            status_code=403,
+            log_message=log_message or "User access is blocked",
+            *args,
+            **kwargs,
+        )
