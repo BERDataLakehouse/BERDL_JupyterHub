@@ -1,14 +1,8 @@
 # Set the base image
-FROM jupyterhub/jupyterhub:5.3.0
+FROM jupyterhub/jupyterhub:5.3.0-17
 
-# Upgrade Node.js to fix configurable-http-proxy compatibility
-RUN apt-get update && apt-get install -y curl git ca-certificates gnupg && \
-    mkdir -p /etc/apt/keyrings && \
-    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_20.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
-    apt-get update && \
-    apt-get install -y nodejs && \
-    npm install -g configurable-http-proxy
+# Required for installing python packages from git
+RUN apt-get update && apt-get install -y git
 
 # --- Environment Configuration ---
 # Define variables for all key paths
