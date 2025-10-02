@@ -1,5 +1,5 @@
-# Set the base image
-FROM jupyterhub/jupyterhub:5.3.0
+# Set the base image - jupyterhub:5.3.0-17
+FROM jupyterhub/jupyterhub@sha256:d914ca11800b4e8d49ef566d38c6a4fed94d41a1d60ee46f0c320c1e20e601ee
 
 # Required for installing python packages from git
 RUN apt-get update && apt-get install -y git
