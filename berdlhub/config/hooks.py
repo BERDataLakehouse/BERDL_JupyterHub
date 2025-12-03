@@ -3,6 +3,11 @@ import os
 from kubernetes import client
 
 from berdlhub.api_utils.spark_utils import SparkClusterManager
+from berdlhub.config.spark_connect_service import (
+    create_user_notebook_service,
+    delete_user_notebook_service,
+    ensure_pod_labels_for_service,
+)
 
 
 async def _get_auth_token(spawner) -> str:
@@ -59,7 +64,7 @@ def _get_profile_environment(spawner) -> dict:
 
 async def pre_spawn_hook(spawner):
     """
-    Hook to create a Spark cluster before the user's server starts.
+    Hook to create a Spark cluster and Kubernetes Service before the user's server starts.
     """
     spawner.log.debug("Pre-spawn hook called for user %s", spawner.user.name)
     kb_auth_token = await _get_auth_token(spawner)
@@ -74,10 +79,16 @@ async def pre_spawn_hook(spawner):
     # Note: SparkClusterManager now handles cluster configuration internally via profile detection
     await SparkClusterManager(kb_auth_token).start_spark_cluster(spawner)
 
+    # Create Kubernetes Service for Spark Connect access
+    # This allows external pods (like datalake-mcp-server) to connect to the user's
+    # Spark Connect server via DNS: sc://jupyter-{username}.{namespace}:15002
+    spawner.log.info("Creating Kubernetes Service for Spark Connect access")
+    create_user_notebook_service(spawner)
+
 
 async def post_stop_hook(spawner):
     """
-    Hook to delete the Spark cluster after the user's server stops.
+    Hook to delete the Spark cluster and Kubernetes Service after the user's server stops.
     """
     kb_auth_token = await _get_auth_token(spawner)
     spawner.log.debug("Post-stop hook called for user %s", spawner.user.name)
@@ -89,8 +100,16 @@ async def post_stop_hook(spawner):
     spawner.environment.update(profile_env)
     await SparkClusterManager(kb_auth_token).stop_spark_cluster(spawner)
 
+    # Delete Kubernetes Service
+    spawner.log.info("Deleting Kubernetes Service for Spark Connect")
+    delete_user_notebook_service(spawner)
+
 
 def modify_pod_hook(spawner, pod):
+    # Ensure pod has the correct labels for Service selection
+    # This must be done BEFORE the Service is created in pre_spawn_hook
+    pod = ensure_pod_labels_for_service(spawner, pod)
+
     pod.spec.containers[0].env.append(
         client.V1EnvVar(
             "BERDL_POD_IP",
