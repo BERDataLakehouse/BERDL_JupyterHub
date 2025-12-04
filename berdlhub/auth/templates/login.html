@@ -125,7 +125,7 @@
             const tokenCookie = getCookie('kbase_session') ?? getCookie('kbase_session_backup');
 
             if (!tokenCookie) return Promise.resolve(null);
-            return fetch(environmentOrigin + '/services/auth/api/V2/me', {
+            return fetch(environmentOrigin + '/services/auth/api/V2/token', {
                 headers: {
                     Authorization: tokenCookie,
                 },
