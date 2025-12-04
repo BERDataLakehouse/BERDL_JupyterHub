@@ -62,8 +62,8 @@ class KBaseAuthenticator(Authenticator):
         kb_auth = KBaseAuth(self.kbase_auth_url, self.auth_full_admin_roles, self.approved_roles)
         kb_user = await kb_auth.validate_token(session_token)
 
-        # Validate MFA requirement - only allow USED status
-        if kb_user.mfa_status != "USED":
+        # Validate MFA requirement - only allow Used status
+        if kb_user.mfa_status != "Used":
             logger.warning(f"User {kb_user.user} denied access due to MFA status: {kb_user.mfa_status}")
             # Redirect to MFA requirement page
             mfa_status = kb_user.mfa_status or "Unknown"
