@@ -17,7 +17,7 @@ def configure_hostpath_storage(c):
         {
             "name": "user-home",
             "hostPath": {
-                "path": f"{storage_base_path}/{{username}}",
+                "path": f"{storage_base_path}/{{unescaped_username}}",
                 "type": "DirectoryOrCreate",
             },
         },
@@ -31,6 +31,6 @@ def configure_hostpath_storage(c):
     ]
 
     c.KubeSpawner.volume_mounts = [
-        {"name": "user-home", "mountPath": "/home/{username}"},
+        {"name": "user-home", "mountPath": "/home/{unescaped_username}"},
         {"name": "user-global", "mountPath": "/global_share"},
     ]

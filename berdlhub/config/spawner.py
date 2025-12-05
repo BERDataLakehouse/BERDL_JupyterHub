@@ -27,9 +27,9 @@ def configure_spawner(c):
     c.KubeSpawner.delete_stopped_pods = True
 
     # Notebook settings
-    c.KubeSpawner.notebook_dir = "/home/{username}"
+    c.KubeSpawner.notebook_dir = "/home/{unescaped_username}"
     c.KubeSpawner.cmd = ["start-notebook.sh"]
-    c.KubeSpawner.working_dir = "/home/{username}"
+    c.KubeSpawner.working_dir = "/home/{unescaped_username}"
     c.KubeSpawner.args = [
         "--ServerApp.default_url=/lab",
     ]
