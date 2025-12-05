@@ -8,7 +8,37 @@ IMPORTANT: This module must be imported BEFORE hooks.py in the configuration loa
 as hooks.py will wrap these service management functions.
 """
 
+import re
 from kubernetes import client, config
+
+
+def sanitize_k8s_name(name: str) -> str:
+    """
+    Sanitize a string to be Kubernetes DNS-1123 subdomain compliant.
+
+    Kubernetes resource names must:
+    - Consist of lowercase alphanumeric characters, '-', or '.'
+    - Start and end with an alphanumeric character
+    - Be at most 253 characters long
+
+    Args:
+        name: The string to sanitize (e.g., username with underscores)
+
+    Returns:
+        A DNS-1123 compliant string (replaces underscores with hyphens)
+    """
+    # Replace underscores and other invalid characters with hyphens
+    sanitized = re.sub(r'[^a-z0-9.-]', '-', name.lower())
+
+    # Ensure it starts and ends with alphanumeric
+    sanitized = re.sub(r'^[^a-z0-9]+', '', sanitized)
+    sanitized = re.sub(r'[^a-z0-9]+$', '', sanitized)
+
+    # Collapse multiple consecutive hyphens
+    sanitized = re.sub(r'-+', '-', sanitized)
+
+    # Truncate to 253 characters (K8s limit)
+    return sanitized[:253]
 
 
 def create_user_notebook_service(spawner):
@@ -28,7 +58,9 @@ def create_user_notebook_service(spawner):
     """
     username = spawner.user.name
     namespace = spawner.namespace
-    service_name = f"jupyter-{username}"
+    # Sanitize username for Kubernetes DNS-1123 compliance (replace underscores with hyphens)
+    sanitized_username = sanitize_k8s_name(username)
+    service_name = f"jupyter-{sanitized_username}"
 
     # Match the labels on the pod created by KubeSpawner
     selector_labels = {
@@ -109,7 +141,9 @@ def delete_user_notebook_service(spawner):
         None (deletes service via Kubernetes API)
     """
     username = spawner.user.name
-    service_name = f"jupyter-{username}"
+    # Sanitize username for Kubernetes DNS-1123 compliance (replace underscores with hyphens)
+    sanitized_username = sanitize_k8s_name(username)
+    service_name = f"jupyter-{sanitized_username}"
 
     try:
         config.load_incluster_config()
