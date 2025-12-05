@@ -28,14 +28,14 @@ def sanitize_k8s_name(name: str) -> str:
         A DNS-1123 compliant string (replaces underscores with hyphens)
     """
     # Replace underscores and other invalid characters with hyphens
-    sanitized = re.sub(r'[^a-z0-9.-]', '-', name.lower())
+    sanitized = re.sub(r"[^a-z0-9.-]", "-", name.lower())
 
     # Ensure it starts and ends with alphanumeric
-    sanitized = re.sub(r'^[^a-z0-9]+', '', sanitized)
-    sanitized = re.sub(r'[^a-z0-9]+$', '', sanitized)
+    sanitized = re.sub(r"^[^a-z0-9]+", "", sanitized)
+    sanitized = re.sub(r"[^a-z0-9]+$", "", sanitized)
 
     # Collapse multiple consecutive hyphens
-    sanitized = re.sub(r'-+', '-', sanitized)
+    sanitized = re.sub(r"-+", "-", sanitized)
 
     # Truncate to 253 characters (K8s limit)
     return sanitized[:253]
