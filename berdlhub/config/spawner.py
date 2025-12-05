@@ -27,10 +27,12 @@ def configure_spawner(c):
     c.KubeSpawner.delete_stopped_pods = True
 
     # Notebook settings
+    # IMPORTANT: notebook_dir uses JupyterHub's template_namespace() which only has {username}
+    # (but template_namespace's {username} is already set to self.user.name, so no hash suffix)
+    c.KubeSpawner.notebook_dir = "/home/{username}"
+    c.KubeSpawner.cmd = ["start-notebook.sh"]
     # IMPORTANT: working_dir is expanded via _expand_user_properties(), so use {unescaped_username}
     # to avoid hash suffixes for usernames with special characters
-    c.KubeSpawner.notebook_dir = "/home/{unescaped_username}"
-    c.KubeSpawner.cmd = ["start-notebook.sh"]
     c.KubeSpawner.working_dir = "/home/{unescaped_username}"
     c.KubeSpawner.args = [
         "--ServerApp.default_url=/lab",
