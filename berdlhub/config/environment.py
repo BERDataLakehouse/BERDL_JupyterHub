@@ -11,7 +11,7 @@ def configure_environment(c):
         # KBase integration
         "KBASE_ORIGIN": os.environ["KBASE_ORIGIN"],
         # Spark configuration
-        "SPARK_JOB_LOG_DIR_CATEGORY": "{unescaped_username}",
+        "SPARK_JOB_LOG_DIR_CATEGORY": "{username}",
         "CDM_TASK_SERVICE_URL": os.environ["CDM_TASK_SERVICE_URL"],
         "SPARK_CLUSTER_MANAGER_API_URL": os.environ["SPARK_CLUSTER_MANAGER_API_URL"],
         # Hive metastore
@@ -28,4 +28,4 @@ def configure_environment(c):
 
     # Jupyter Docker Stacks configuration
     # https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html
-    c.KubeSpawner.environment.update({"NB_USER": "{unescaped_username}", "CHOWN_HOME": "yes", "GEN_CERT": "yes"})
+    c.KubeSpawner.environment.update({"NB_USER": "{username}", "CHOWN_HOME": "yes", "GEN_CERT": "yes"})
