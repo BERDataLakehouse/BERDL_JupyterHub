@@ -42,15 +42,6 @@ class TestClusterDefaults:
         assert defaults.master_cores == 2
         assert defaults.master_memory == "4GiB"
 
-    def test_from_profile_small(self):
-        """Test loading from small profile."""
-        defaults = ClusterDefaults.from_profile("small")
-        assert defaults.worker_count == 1
-        assert defaults.worker_cores == 1
-        assert defaults.worker_memory == "2GiB"
-        assert defaults.master_cores == 1
-        assert defaults.master_memory == "1GiB"
-
     def test_from_profile_medium(self):
         """Test loading from medium profile."""
         defaults = ClusterDefaults.from_profile("medium")
@@ -70,13 +61,13 @@ class TestClusterDefaults:
         assert defaults.master_memory == "16GiB"
 
     def test_from_profile_unknown_fallback(self):
-        """Test loading from unknown profile falls back to small."""
+        """Test loading from unknown profile falls back to large."""
         defaults = ClusterDefaults.from_profile("unknown")
-        assert defaults.worker_count == 1
+        assert defaults.worker_count == 4
         assert defaults.worker_cores == 1
-        assert defaults.worker_memory == "2GiB"
+        assert defaults.worker_memory == "32GiB"
         assert defaults.master_cores == 1
-        assert defaults.master_memory == "1GiB"
+        assert defaults.master_memory == "16GiB"
 
 
 class TestSparkClusterManager:
@@ -283,8 +274,8 @@ class TestSparkClusterManager:
         mock_spawner = Mock()
         mock_spawner.user.name = "testuser"
         mock_spawner.environment = {}
-        mock_spawner.profile_list = [{"slug": "small", "display_name": "Small"}]
-        mock_spawner.user_options = {"profile": "small"}
+        mock_spawner.profile_list = [{"slug": "large", "display_name": "Large"}]
+        mock_spawner.user_options = {"profile": "large"}
 
         # Mock create_cluster method
         mock_response = SparkClusterCreateResponse(
@@ -306,8 +297,8 @@ class TestSparkClusterManager:
         # Mock spawner
         mock_spawner = Mock()
         mock_spawner.user.name = "testuser"
-        mock_spawner.profile_list = [{"slug": "small", "display_name": "Small"}]
-        mock_spawner.user_options = {"profile": "small"}
+        mock_spawner.profile_list = [{"slug": "medium", "display_name": "Medium"}]
+        mock_spawner.user_options = {"profile": "medium"}
 
         # Mock create_cluster method with response without master_url
         mock_response = Mock()
@@ -323,8 +314,8 @@ class TestSparkClusterManager:
         # Mock spawner
         mock_spawner = Mock()
         mock_spawner.user.name = "testuser"
-        mock_spawner.profile_list = [{"slug": "small", "display_name": "Small"}]
-        mock_spawner.user_options = {"profile": "small"}
+        mock_spawner.profile_list = [{"slug": "medium", "display_name": "Medium"}]
+        mock_spawner.user_options = {"profile": "medium"}
 
         # Mock create_cluster method to raise exception
         manager.create_cluster = AsyncMock(side_effect=SparkClusterError("Creation failed"))
@@ -372,8 +363,8 @@ class TestSparkClusterManagerIntegration:
         mock_spawner = Mock()
         mock_spawner.user.name = "testuser"
         mock_spawner.environment = {}
-        mock_spawner.profile_list = [{"slug": "small", "display_name": "Small"}]
-        mock_spawner.user_options = {"profile": "small"}
+        mock_spawner.profile_list = [{"slug": "large", "display_name": "Large"}]
+        mock_spawner.user_options = {"profile": "large"}
 
         # Mock create_cluster
         create_response = SparkClusterCreateResponse(
