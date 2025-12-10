@@ -28,13 +28,6 @@ class ClusterDefaults:
 
     # Profile configurations
     PROFILES = {
-        "small": {
-            "worker_count": 1,
-            "worker_cores": 1,
-            "worker_memory": "2GiB",
-            "master_cores": 1,
-            "master_memory": "1GiB",
-        },
         "medium": {
             "worker_count": 4,
             "worker_cores": 1,
@@ -55,7 +48,7 @@ class ClusterDefaults:
     def from_profile(cls, profile_slug: str) -> "ClusterDefaults":
         """Load defaults from a predefined profile."""
         if profile_slug not in cls.PROFILES:
-            profile_slug = "small"  # fallback to default
+            profile_slug = "large"  # fallback to default
 
         profile_config = cls.PROFILES[profile_slug]
         return cls(**profile_config)
@@ -93,14 +86,14 @@ class SparkClusterManager:
 
     def _get_profile_slug_from_spawner(self, spawner) -> str:
         """Get the profile slug from spawner. ClusterDefaults.from_profile will handle fallback."""
-        # Get the profile slug from user_options or use 'small' as default
+        # Get the profile slug from user_options or use 'large' as default
         if spawner.user_options and "profile" in spawner.user_options:
             profile_slug = spawner.user_options["profile"]
             self.logger.info(f"Using profile from user options: {profile_slug}")
             return profile_slug
 
         self.logger.info("No profile specified in user options, will use default")
-        return "small"
+        return "large"
 
     async def _raise_api_error(self, response: Response, operation: str):
         """
