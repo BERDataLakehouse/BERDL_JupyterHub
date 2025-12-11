@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: KBase Jira
+    url: https://kbase-jira.atlassian.net/
+    about: Support via Jira 
+  - name: KBase Docs
+    url: https://docs.kbase.us/troubleshooting/support
+    about: Community support via Slack
