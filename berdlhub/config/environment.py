@@ -47,6 +47,7 @@ def configure_environment(c):
         # Spark Connect URL (uses callable to generate from sanitized username)
         # This must match the Service name created in spark_connect_service.py
         "SPARK_CONNECT_URL": get_spark_connect_url,
+        "TENANT_ACCESS_SERVICE_URL": os.environ["TENANT_ACCESS_SERVICE_URL"],
     }
 
     # Jupyter Docker Stacks configuration
