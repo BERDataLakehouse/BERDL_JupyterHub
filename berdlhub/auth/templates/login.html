@@ -10,8 +10,8 @@
             {% block login_container %}
                 <div class="service-login">
                     <p id='insecure-login-warning' class='hidden alert alert-warning'>
-                        Warning: JupyterHub seems to be served over an unsecured HTTP connection.
-                        We strongly recommend enabling HTTPS for JupyterHub.
+                        Warning: This service seems to be served over an unsecured HTTP connection.
+                        We strongly recommend enabling HTTPS.
                     </p>
                 </div>
 
@@ -24,8 +24,8 @@
                     </div>
                     <div class='auth-form-body m-auto'>
                         <p id='insecure-login-warning' class='hidden alert alert-warning'>
-                            Warning: JupyterHub seems to be served over an unsecured HTTP connection.
-                            We strongly recommend enabling HTTPS for JupyterHub.
+                            Warning: This service seems to be served over an unsecured HTTP connection.
+                            We strongly recommend enabling HTTPS.
                         </p>
 
                         {% if login_error %}<p class="login_error">{{ login_error }}</p>{% endif %}
