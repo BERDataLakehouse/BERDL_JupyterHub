@@ -1,6 +1,12 @@
 """Authentication configuration."""
 
-from berdlhub.auth.kb_jupyterhub_auth import KBaseAuthenticator, TokenRefreshHandler, MfaRequiredHandler
+from berdlhub.auth.kb_jupyterhub_auth import (
+    KBaseAuthenticator,
+    TokenRefreshHandler,
+    MfaRequiredHandler,
+    AccessRequestHandler,
+    AdminAccessRequestsHandler,
+)
 
 
 def configure_auth(c):
@@ -17,10 +23,12 @@ def configure_auth(c):
     # ref: https://jupyterhub.readthedocs.io/en/stable/reference/config-reference.html#Authenticator.auth_refresh_age
     c.Authenticator.auth_refresh_age = 120
 
-    # Add custom API handlers for token monitoring and MFA requirement
+    # Add custom API handlers for token monitoring, MFA requirement, and access requests
     c.JupyterHub.extra_handlers = [
         (r"/api/refresh-token", TokenRefreshHandler),
         (r"/mfa-required", MfaRequiredHandler),
+        (r"/access-request", AccessRequestHandler),
+        (r"/admin/access-requests", AdminAccessRequestsHandler),
     ]
 
     # TODO: Consider adding user allowlist for production

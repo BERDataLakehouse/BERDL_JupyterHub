@@ -1,0 +1,69 @@
+{% extends "page.html" %}
+
+{% block main %}
+<div id="access-request-main" class="container">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="text-center">
+            <h1>Request Access to KBase BERDL Notebooks</h1>
+            <div style="margin: 20px 0;">
+              <i class="fa fa-lock" style="font-size: 4em; color: #5bc0de;"></i>
+            </div>
+            <p class="lead">
+              Access to KBase BERDL Notebooks requires approval. Please complete the form below to request access.
+            </p>
+          </div>
+
+          <div class="alert alert-info">
+            <strong>Logged in as:</strong> {{ username }}
+          </div>
+
+          <form method="post" action="/access-request" id="access-request-form">
+            <input type="hidden" name="_xsrf" value="{{ xsrf_token }}">
+            <input type="hidden" name="username" value="{{ username }}">
+
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label for="institution" class="form-label"><strong>Institutional Affiliation</strong></label>
+              <input
+                type="text"
+                class="form-control"
+                id="institution"
+                name="institution"
+                placeholder="e.g., University of California, Berkeley"
+                required
+                style="margin-top: 5px;"
+              >
+              <small class="form-text text-muted">Please enter your university, research institution, or organization.</small>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label for="reason" class="form-label"><strong>Reason for Requesting Access</strong></label>
+              <textarea
+                class="form-control"
+                id="reason"
+                name="reason"
+                rows="4"
+                placeholder="Please describe your research goals and how you plan to use BERDL Notebooks..."
+                required
+                style="margin-top: 5px;"
+              ></textarea>
+              <small class="form-text text-muted">Briefly describe your intended use case and research objectives.</small>
+            </div>
+
+            <div class="text-center" style="margin-top: 30px;">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fa fa-paper-plane"></i> Submit Request
+              </button>
+              <a href="https://{{ kbase_origin }}" class="btn btn-secondary btn-lg" style="margin-left: 10px;">
+                Return to KBase
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock main %}

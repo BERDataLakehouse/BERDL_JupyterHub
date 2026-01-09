@@ -84,30 +84,24 @@ class KBaseAuth:
         if expires_ms:
             expires = datetime.fromtimestamp(expires_ms / 1000.0, tz=timezone.utc)
 
+        username = me_data.get("user")
+        if not username:
+            raise InvalidTokenError("Invalid token response - missing username")
+
         user_roles = set(me_data.get("customroles", []))
 
         # Check if user has an approved role to login
         if not (user_roles & self._approved_roles):
             logging.info(
-                "User does not have an approved role. User roles: %s, Required roles: %s",
+                "User %s does not have an approved role. User roles: %s, Required roles: %s",
+                username,
                 user_roles,
                 self._approved_roles,
             )
-            required_roles = ", ".join(sorted(self._approved_roles))
-            raise AuthenticationError(
-                status_code=403,
-                log_message=(
-                    f"Access denied. Your account requires one of the following roles: {required_roles}. "
-                    "Please contact the KBASE or BERDL administrators for assistance."
-                ),
-            )
+            raise MissingAccessRoleError(username, user_roles, self._approved_roles)
 
         admin_perm = self._get_role(user_roles)
         mfa_status = token_data.get("mfa")
-
-        username = me_data.get("user")
-        if not username:
-            raise InvalidTokenError("Invalid token response - missing username")
 
         return KBaseUser(UserID(username), admin_perm, token, expires, mfa_status)
 
@@ -146,4 +140,19 @@ class MissingTokenError(AuthenticationError):
             log_message=log_message or "Missing session token",
             *args,
             **kwargs,
+        )
+
+
+class MissingAccessRoleError(Exception):
+    """
+    Raised when a user authenticates successfully but lacks the required role.
+    This is not an HTTPError because we want to handle it with a redirect rather than an error page.
+    """
+
+    def __init__(self, username: str, user_roles: set, required_roles: set):
+        self.username = username
+        self.user_roles = user_roles
+        self.required_roles = required_roles
+        super().__init__(
+            f"User {username} missing required access role. Has: {user_roles}, needs one of: {required_roles}"
         )

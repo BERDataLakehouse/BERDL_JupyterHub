@@ -1,13 +1,20 @@
 import logging
 import os
 from datetime import datetime, timezone
+from urllib.parse import quote
 
 from jupyterhub.auth import Authenticator
 from jupyterhub.handlers import BaseHandler
 from traitlets import List
 from tornado import web
 
-from berdlhub.auth.kb_auth import KBaseAuth, MissingTokenError, InvalidTokenError, AdminPermission
+from berdlhub.auth.kb_auth import (
+    KBaseAuth,
+    MissingTokenError,
+    InvalidTokenError,
+    MissingAccessRoleError,
+    AdminPermission,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +67,14 @@ class KBaseAuthenticator(Authenticator):
             )
 
         kb_auth = KBaseAuth(self.kbase_auth_url, self.auth_full_admin_roles, self.approved_roles)
-        kb_user = await kb_auth.validate_token(session_token)
+
+        try:
+            kb_user = await kb_auth.validate_token(session_token)
+        except MissingAccessRoleError as e:
+            logger.warning(f"User {e.username} missing required access role")
+            redirect_url = f"/access-request?username={quote(e.username)}"
+            handler.redirect(redirect_url)
+            return None
 
         # Validate MFA requirement - only allow Used status
         if kb_user.mfa_status != "Used":
@@ -195,5 +209,87 @@ class MfaRequiredHandler(BaseHandler):
 
         html = await self.render_template(
             "mfa-required.html", mfa_status=mfa_status, kbase_origin=f"https://{kbase_origin()}"
+        )
+        self.finish(html)
+
+
+class AccessRequestHandler(BaseHandler):
+    """
+    Handler for access request page when user lacks required role.
+    """
+
+    async def get(self):
+        """
+        Display access request form.
+        """
+        username = self.get_argument("username", "Unknown")
+
+        html = await self.render_template(
+            "access-request.html",
+            username=username,
+            kbase_origin=kbase_origin(),
+            xsrf_token=self.xsrf_token.decode("utf-8") if isinstance(self.xsrf_token, bytes) else self.xsrf_token,
+        )
+        self.finish(html)
+
+    async def post(self):
+        """
+        Process access request form submission.
+        """
+        from berdl_notebook_utils.access_requests import request_berdl_access
+
+        username = self.get_body_argument("username", "Unknown")
+        institution = self.get_body_argument("institution", "")
+        reason = self.get_body_argument("reason", "")
+
+        logger.info(f"Access request from user={username}, institution={institution}, reason={reason}")
+
+        try:
+            result = request_berdl_access(
+                username=username,
+                institution=institution,
+                reason=reason,
+            )
+            logger.info(f"Access request submitted: {result}")
+        except Exception as e:
+            logger.error(f"Failed to submit access request: {e}")
+            # Still show success page to user - request was logged
+
+        html = await self.render_template(
+            "access-request-submitted.html",
+            kbase_origin=kbase_origin(),
+        )
+        self.finish(html)
+
+
+class AdminAccessRequestsHandler(BaseHandler):
+    """
+    Admin page to view access requests.
+    """
+
+    @web.authenticated
+    async def get(self):
+        """
+        Display list of access requests (admin only).
+        """
+        user = self.current_user
+        if not user.admin:
+            raise web.HTTPError(403, "Admin access required")
+
+        from berdl_notebook_utils.access_requests import list_access_requests
+
+        requests = []
+        error = None
+
+        try:
+            requests = list_access_requests()
+        except Exception as e:
+            logger.error(f"Failed to fetch access requests: {e}")
+            error = str(e)
+
+        html = await self.render_template(
+            "admin-access-requests.html",
+            requests=requests,
+            error=error,
         )
         self.finish(html)
