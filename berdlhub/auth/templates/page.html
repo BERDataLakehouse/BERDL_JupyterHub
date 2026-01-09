@@ -1,0 +1,65 @@
+{% extends "templates/page.html" %}
+{#
+  KBase Branding for JupyterHub
+
+  Logo setup:
+  - Light logo: served via c.JupyterHub.logo_file at /hub/logo
+  - Dark logo: copied to JupyterHub static dir, served at /hub/static/images/kbase-logo-dark.png
+
+  The JS below injects the dark logo and CSS toggles visibility based on [data-bs-theme].
+#}
+
+{% block stylesheet %}
+{{ super() }}
+<style>
+/* KBase branding */
+.navbar-brand {
+    padding: 2px !important;
+}
+.navbar-brand img {
+    height: 56px;
+    width: auto;
+    margin: -10px 0;
+}
+
+/* Light mode: show light logo, hide dark logo */
+.navbar-brand img.logo-dark {
+    display: none;
+}
+
+/* Dark mode: show dark logo, hide light logo */
+[data-bs-theme=dark] .navbar-brand img.logo-light {
+    display: none !important;
+}
+[data-bs-theme=dark] .navbar-brand img.logo-dark {
+    display: block !important;
+}
+
+.navbar-header {
+    display: flex;
+    align-items: center;
+}
+</style>
+{% endblock stylesheet %}
+
+{% block script %}
+{{ super() }}
+<script>
+// Inject dark mode logo alongside the light logo (served from /hub/logo)
+(function() {
+    const logoImg = document.querySelector('.navbar-brand img');
+    if (!logoImg) return;
+
+    // Mark existing logo as light version
+    logoImg.classList.add('logo-light');
+
+    // Create and inject dark version
+    const darkLogo = document.createElement('img');
+    darkLogo.src = '/hub/static/images/kbase-logo-dark.png';
+    darkLogo.className = logoImg.className.replace('logo-light', 'logo-dark');
+    darkLogo.alt = logoImg.alt;
+
+    logoImg.parentNode.insertBefore(darkLogo, logoImg.nextSibling);
+})();
+</script>
+{% endblock script %}
