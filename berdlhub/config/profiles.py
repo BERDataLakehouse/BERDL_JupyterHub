@@ -11,7 +11,7 @@ def configure_profiles(c):
     c.KubeSpawner.profile_list = [
         {
             "display_name": (
-                "Medium: Spark 4 Workers (8GB, 1 core each) + Master (8GB, 1 core) - Notebook (16GB, 2 cores)"
+                "Medium: Spark 2 Workers (4GB, 1 core each) + Master (1GB, 1 core) - Notebook (16GB, 2 cores)"
             ),
             "description": "Balanced Spark cluster for medium data processing workloads",
             "slug": "medium",
@@ -25,7 +25,7 @@ def configure_profiles(c):
         },
         {
             "display_name": (
-                "Large: Spark 4 Workers (32GB, 1 core each) + Master (16GB, 1 core) - Notebook (72GB, 4 cores)"
+                "Large: Spark 4 Workers (6GB, 1 core each) + Master (1GB, 1 core) - Notebook (72GB, 4 cores)"
             ),
             "description": "High-performance Spark cluster for large datasets and heavy computation",
             "slug": "large",

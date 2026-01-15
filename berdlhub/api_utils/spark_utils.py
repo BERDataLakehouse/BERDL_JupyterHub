@@ -29,18 +29,18 @@ class ClusterDefaults:
     # Profile configurations
     PROFILES = {
         "medium": {
-            "worker_count": 4,
+            "worker_count": 2,
             "worker_cores": 1,
-            "worker_memory": "8GiB",
+            "worker_memory": "4GiB",
             "master_cores": 1,
-            "master_memory": "8GiB",
+            "master_memory": "1GiB",
         },
         "large": {
             "worker_count": 4,
             "worker_cores": 1,
-            "worker_memory": "32GiB",
+            "worker_memory": "6GiB",
             "master_cores": 1,
-            "master_memory": "16GiB",
+            "master_memory": "1GiB",
         },
     }
 
