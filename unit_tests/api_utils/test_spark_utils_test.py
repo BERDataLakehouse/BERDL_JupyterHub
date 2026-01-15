@@ -45,29 +45,29 @@ class TestClusterDefaults:
     def test_from_profile_medium(self):
         """Test loading from medium profile."""
         defaults = ClusterDefaults.from_profile("medium")
-        assert defaults.worker_count == 4
+        assert defaults.worker_count == 2
         assert defaults.worker_cores == 1
-        assert defaults.worker_memory == "8GiB"
+        assert defaults.worker_memory == "4GiB"
         assert defaults.master_cores == 1
-        assert defaults.master_memory == "8GiB"
+        assert defaults.master_memory == "1GiB"
 
     def test_from_profile_large(self):
         """Test loading from large profile."""
         defaults = ClusterDefaults.from_profile("large")
         assert defaults.worker_count == 4
         assert defaults.worker_cores == 1
-        assert defaults.worker_memory == "32GiB"
+        assert defaults.worker_memory == "6GiB"
         assert defaults.master_cores == 1
-        assert defaults.master_memory == "16GiB"
+        assert defaults.master_memory == "1GiB"
 
     def test_from_profile_unknown_fallback(self):
         """Test loading from unknown profile falls back to large."""
         defaults = ClusterDefaults.from_profile("unknown")
         assert defaults.worker_count == 4
         assert defaults.worker_cores == 1
-        assert defaults.worker_memory == "32GiB"
+        assert defaults.worker_memory == "6GiB"
         assert defaults.master_cores == 1
-        assert defaults.master_memory == "16GiB"
+        assert defaults.master_memory == "1GiB"
 
 
 class TestSparkClusterManager:
