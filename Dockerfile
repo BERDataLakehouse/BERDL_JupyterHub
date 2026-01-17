@@ -21,8 +21,9 @@ RUN uv pip install --system .
 
 COPY ./berdlhub/ ${BERDL_DIR}/
 
-# Copy dark mode logo to JupyterHub's static directory for theme switching
-RUN cp ${BERDL_DIR}/static/kbase-logo-dark.png /usr/local/share/jupyterhub/static/images/
+# Copy static assets to JupyterHub's static directory
+RUN cp ${BERDL_DIR}/static/kbase-logo-dark.png /usr/local/share/jupyterhub/static/images/ && \
+    cp ${BERDL_DIR}/static/kbase-theme.css /usr/local/share/jupyterhub/static/css/
 
 # This default directory must be mounted in order to preserve the sqlite and pid files
 WORKDIR /srv/jupyterhub

@@ -1,0 +1,495 @@
+/**
+ * KBase Theme for JupyterHub
+ *
+ * Maps KBase UI color palette to Bootstrap 5 CSS variables.
+ * Colors sourced from: ui/src/common/colors.scss
+ */
+
+:root,
+[data-bs-theme="light"] {
+  /* Primary - KBase freshwater blue */
+  --bs-primary: #026DAA;
+  --bs-primary-rgb: 2, 109, 170;
+
+  /* Secondary - KBase teal */
+  --bs-secondary: #009688;
+  --bs-secondary-rgb: 0, 150, 136;
+
+  /* Success - KBase success (teal-derived) */
+  --bs-success: #118577;
+  --bs-success-rgb: 17, 133, 119;
+
+  /* Info - KBase info blue */
+  --bs-info: #66B1DB;
+  --bs-info-rgb: 102, 177, 219;
+
+  /* Warning - KBase golden yellow */
+  --bs-warning: #FFD200;
+  --bs-warning-rgb: 255, 210, 0;
+
+  /* Danger - KBase red */
+  --bs-danger: #D2232A;
+  --bs-danger-rgb: 210, 35, 42;
+
+  /* Light/Dark base colors */
+  --bs-light: #F2EFEB;
+  --bs-light-rgb: 242, 239, 235;
+  --bs-dark: #3E3832;
+  --bs-dark-rgb: 62, 56, 50;
+
+  /* Body */
+  --bs-body-bg: #FFFFFF;
+  --bs-body-color: #171412;
+
+  /* Links - KBase primary */
+  --bs-link-color: #026DAA;
+  --bs-link-hover-color: #023E60;
+
+  /* Border color - KBase base-lighter */
+  --bs-border-color: #DED5CB;
+
+  /* Focus ring - KBase primary with transparency */
+  --bs-focus-ring-color: rgba(2, 109, 170, 0.25);
+}
+
+/* Dark mode overrides */
+[data-bs-theme="dark"] {
+  /* Body */
+  --bs-body-bg: #171412;
+  --bs-body-color: #F2EFEB;
+
+  /* Lighter variants for dark mode readability */
+  --bs-primary: #66B1DB;
+  --bs-primary-rgb: 102, 177, 219;
+
+  --bs-secondary: #66C0B7;
+  --bs-secondary-rgb: 102, 192, 183;
+
+  --bs-success: #33ABA0;
+  --bs-success-rgb: 51, 171, 160;
+
+  --bs-info: #99CFE7;
+  --bs-info-rgb: 153, 207, 231;
+
+  --bs-warning: #FDDD49;
+  --bs-warning-rgb: 253, 221, 73;
+
+  --bs-danger: #EDA7AA;
+  --bs-danger-rgb: 237, 167, 170;
+
+  /* Light/Dark inverted */
+  --bs-light: #3E3832;
+  --bs-light-rgb: 62, 56, 50;
+  --bs-dark: #F2EFEB;
+  --bs-dark-rgb: 242, 239, 235;
+
+  /* Links */
+  --bs-link-color: #66B1DB;
+  --bs-link-hover-color: #99CFE7;
+
+  /* Borders */
+  --bs-border-color: #544C45;
+
+  /* Focus ring */
+  --bs-focus-ring-color: rgba(102, 177, 219, 0.35);
+}
+
+/* ============================================
+   Dark Mode Component Overrides
+   ============================================ */
+
+/* Navbar dark mode - KBase warm dark grey */
+[data-bs-theme="dark"] .navbar.bg-body-tertiary {
+  --bs-tertiary-bg: #252220 !important;
+  background-color: #252220 !important;
+}
+
+/* Primary buttons - dark mode */
+[data-bs-theme="dark"] .btn-primary {
+  --bs-btn-bg: #026DAA;
+  --bs-btn-border-color: #026DAA;
+  --bs-btn-color: #FFFFFF;
+  --bs-btn-hover-bg: #66B1DB;
+  --bs-btn-hover-border-color: #66B1DB;
+  --bs-btn-hover-color: #171412;
+  --bs-btn-active-bg: #99CFE7;
+  --bs-btn-active-border-color: #99CFE7;
+  --bs-btn-active-color: #171412;
+}
+
+/* Secondary buttons - dark mode */
+[data-bs-theme="dark"] .btn-secondary {
+  --bs-btn-bg: #009688;
+  --bs-btn-border-color: #009688;
+  --bs-btn-color: #FFFFFF;
+  --bs-btn-hover-bg: #66C0B7;
+  --bs-btn-hover-border-color: #66C0B7;
+  --bs-btn-hover-color: #171412;
+}
+
+/* Success buttons - dark mode */
+[data-bs-theme="dark"] .btn-success {
+  --bs-btn-bg: #118577;
+  --bs-btn-border-color: #118577;
+  --bs-btn-color: #FFFFFF;
+  --bs-btn-hover-bg: #33ABA0;
+  --bs-btn-hover-border-color: #33ABA0;
+  --bs-btn-hover-color: #171412;
+}
+
+/* Danger buttons - dark mode */
+[data-bs-theme="dark"] .btn-danger {
+  --bs-btn-bg: #D2232A;
+  --bs-btn-border-color: #D2232A;
+  --bs-btn-color: #FFFFFF;
+  --bs-btn-hover-bg: #EDA7AA;
+  --bs-btn-hover-border-color: #EDA7AA;
+  --bs-btn-hover-color: #171412;
+}
+
+/* Warning buttons - dark mode */
+[data-bs-theme="dark"] .btn-warning {
+  --bs-btn-bg: #B99902;
+  --bs-btn-border-color: #B99902;
+  --bs-btn-color: #FFFFFF;
+  --bs-btn-hover-bg: #FFD200;
+  --bs-btn-hover-border-color: #FFD200;
+  --bs-btn-hover-color: #171412;
+}
+
+/* Outline buttons - dark mode */
+[data-bs-theme="dark"] .btn-outline-primary {
+  --bs-btn-color: #66B1DB;
+  --bs-btn-border-color: #66B1DB;
+  --bs-btn-hover-bg: #66B1DB;
+  --bs-btn-hover-border-color: #66B1DB;
+  --bs-btn-hover-color: #171412;
+}
+
+[data-bs-theme="dark"] .btn-outline-secondary {
+  --bs-btn-color: #66C0B7;
+  --bs-btn-border-color: #66C0B7;
+  --bs-btn-hover-bg: #66C0B7;
+  --bs-btn-hover-border-color: #66C0B7;
+  --bs-btn-hover-color: #171412;
+}
+
+/* Form controls - dark mode */
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+  background-color: #1E1B18;
+  border-color: #544C45;
+  color: #F2EFEB;
+}
+
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-select:focus {
+  background-color: #1E1B18;
+  border-color: #66B1DB;
+  color: #F2EFEB;
+  box-shadow: 0 0 0 0.25rem rgba(102, 177, 219, 0.35);
+}
+
+[data-bs-theme="dark"] .form-control::placeholder {
+  color: #9D9389;
+}
+
+/* Cards - dark mode */
+[data-bs-theme="dark"] .card {
+  --bs-card-bg: #1E1B18;
+  --bs-card-border-color: #544C45;
+  --bs-card-color: #F2EFEB;
+}
+
+[data-bs-theme="dark"] .card-header {
+  background-color: #252220;
+  border-bottom-color: #544C45;
+}
+
+/* Alerts - dark mode */
+[data-bs-theme="dark"] .alert-primary {
+  --bs-alert-bg: #023E60;
+  --bs-alert-border-color: #026DAA;
+  --bs-alert-color: #CCE5F3;
+}
+
+[data-bs-theme="dark"] .alert-success {
+  --bs-alert-bg: #06564D;
+  --bs-alert-border-color: #118577;
+  --bs-alert-color: #C1E4E0;
+}
+
+[data-bs-theme="dark"] .alert-warning {
+  --bs-alert-bg: #8F7700;
+  --bs-alert-border-color: #B99902;
+  --bs-alert-color: #FFEFAC;
+}
+
+[data-bs-theme="dark"] .alert-danger {
+  --bs-alert-bg: #7C0E12;
+  --bs-alert-border-color: #B6151C;
+  --bs-alert-color: #F9DADB;
+}
+
+[data-bs-theme="dark"] .alert-info {
+  --bs-alert-bg: #404F5D;
+  --bs-alert-border-color: #65798C;
+  --bs-alert-color: #E7EFF8;
+}
+
+/* Tables - dark mode */
+[data-bs-theme="dark"] .table {
+  --bs-table-bg: transparent;
+  --bs-table-color: #F2EFEB;
+  --bs-table-border-color: #544C45;
+  --bs-table-striped-bg: #1E1B18;
+  --bs-table-hover-bg: #252220;
+}
+
+/* Dropdowns - dark mode */
+[data-bs-theme="dark"] .dropdown-menu {
+  --bs-dropdown-bg: #1E1B18;
+  --bs-dropdown-border-color: #544C45;
+  --bs-dropdown-link-color: #F2EFEB;
+  --bs-dropdown-link-hover-bg: #252220;
+  --bs-dropdown-link-hover-color: #FFFFFF;
+}
+
+/* Modals - dark mode */
+[data-bs-theme="dark"] .modal-content {
+  --bs-modal-bg: #1E1B18;
+  --bs-modal-border-color: #544C45;
+  --bs-modal-color: #F2EFEB;
+}
+
+[data-bs-theme="dark"] .modal-header {
+  border-bottom-color: #544C45;
+}
+
+[data-bs-theme="dark"] .modal-footer {
+  border-top-color: #544C45;
+}
+
+/* List groups - dark mode */
+[data-bs-theme="dark"] .list-group-item {
+  --bs-list-group-bg: #1E1B18;
+  --bs-list-group-border-color: #544C45;
+  --bs-list-group-color: #F2EFEB;
+  --bs-list-group-action-hover-bg: #252220;
+}
+
+/* Progress bars - dark mode */
+[data-bs-theme="dark"] .progress {
+  --bs-progress-bg: #3E3832;
+  --bs-progress-bar-bg: #66B1DB;
+}
+
+/* Pagination - dark mode */
+[data-bs-theme="dark"] .pagination {
+  --bs-pagination-bg: #1E1B18;
+  --bs-pagination-border-color: #544C45;
+  --bs-pagination-color: #66B1DB;
+  --bs-pagination-hover-bg: #252220;
+  --bs-pagination-hover-color: #99CFE7;
+  --bs-pagination-active-bg: #026DAA;
+  --bs-pagination-active-border-color: #026DAA;
+}
+
+/* Code/Pre - dark mode */
+[data-bs-theme="dark"] code {
+  color: #F78E1E;
+}
+
+[data-bs-theme="dark"] pre {
+  background-color: #1E1B18;
+  border-color: #544C45;
+}
+
+/* HR - dark mode */
+[data-bs-theme="dark"] hr {
+  border-color: #544C45;
+}
+
+/* Text muted - dark mode */
+[data-bs-theme="dark"] .text-muted {
+  color: #9D9389 !important;
+}
+
+/* ============================================
+   Component Overrides
+   ============================================ */
+
+/* Navbar - Use KBase warm greys instead of Bootstrap defaults */
+.navbar.bg-body-tertiary {
+  --bs-tertiary-bg: #F2EFEB !important;
+  --bs-tertiary-bg-rgb: 242, 239, 235 !important;
+  background-color: #F2EFEB !important;
+}
+
+/* Primary buttons */
+.btn-primary {
+  --bs-btn-bg: #026DAA;
+  --bs-btn-border-color: #026DAA;
+  --bs-btn-hover-bg: #023E60;
+  --bs-btn-hover-border-color: #023E60;
+  --bs-btn-active-bg: #022940;
+  --bs-btn-active-border-color: #022940;
+  --bs-btn-disabled-bg: #DED5CB;
+  --bs-btn-disabled-border-color: #DED5CB;
+}
+
+/* Secondary buttons */
+.btn-secondary {
+  --bs-btn-bg: #009688;
+  --bs-btn-border-color: #009688;
+  --bs-btn-hover-bg: #118577;
+  --bs-btn-hover-border-color: #118577;
+  --bs-btn-active-bg: #06564D;
+  --bs-btn-active-border-color: #06564D;
+}
+
+/* Success buttons */
+.btn-success {
+  --bs-btn-bg: #118577;
+  --bs-btn-border-color: #118577;
+  --bs-btn-hover-bg: #0A6258;
+  --bs-btn-hover-border-color: #0A6258;
+}
+
+/* Danger buttons */
+.btn-danger {
+  --bs-btn-bg: #D2232A;
+  --bs-btn-border-color: #D2232A;
+  --bs-btn-hover-bg: #B6151C;
+  --bs-btn-hover-border-color: #B6151C;
+}
+
+/* Warning buttons - dark text for contrast */
+.btn-warning {
+  --bs-btn-bg: #FFD200;
+  --bs-btn-border-color: #FFD200;
+  --bs-btn-color: #171412;
+  --bs-btn-hover-bg: #B99902;
+  --bs-btn-hover-border-color: #B99902;
+  --bs-btn-hover-color: #171412;
+}
+
+/* Outline button variants */
+.btn-outline-primary {
+  --bs-btn-color: #026DAA;
+  --bs-btn-border-color: #026DAA;
+  --bs-btn-hover-bg: #026DAA;
+  --bs-btn-hover-border-color: #026DAA;
+  --bs-btn-active-bg: #023E60;
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: #009688;
+  --bs-btn-border-color: #009688;
+  --bs-btn-hover-bg: #009688;
+  --bs-btn-hover-border-color: #009688;
+}
+
+/* Form controls */
+.form-control:focus,
+.form-select:focus {
+  border-color: #66B1DB;
+  box-shadow: 0 0 0 0.25rem rgba(2, 109, 170, 0.25);
+}
+
+/* Cards */
+.card {
+  --bs-card-border-color: #DED5CB;
+}
+
+/* Alerts */
+.alert-primary {
+  --bs-alert-bg: #DFEEF6;
+  --bs-alert-border-color: #CCE5F3;
+  --bs-alert-color: #023E60;
+}
+
+.alert-success {
+  --bs-alert-bg: #C1E4E0;
+  --bs-alert-border-color: #99D5CF;
+  --bs-alert-color: #00423B;
+}
+
+.alert-warning {
+  --bs-alert-bg: #FFEFAC;
+  --bs-alert-border-color: #FFE776;
+  --bs-alert-color: #8F7700;
+}
+
+.alert-danger {
+  --bs-alert-bg: #F9DADB;
+  --bs-alert-border-color: #F6D3D4;
+  --bs-alert-color: #7C0E12;
+}
+
+.alert-info {
+  --bs-alert-bg: #E7EFF8;
+  --bs-alert-border-color: #D3E2F2;
+  --bs-alert-color: #404F5D;
+}
+
+/* Progress bars */
+.progress {
+  --bs-progress-bar-bg: #026DAA;
+}
+
+/* Badges */
+.badge.bg-primary {
+  background-color: #026DAA !important;
+}
+
+.badge.bg-secondary {
+  background-color: #009688 !important;
+}
+
+/* Spinners */
+.spinner-border.text-primary {
+  color: #026DAA !important;
+}
+
+/* ============================================
+   JupyterHub-specific styles
+   ============================================ */
+
+/* Server status indicators */
+.status-running {
+  color: #118577;
+}
+
+.status-pending {
+  color: #A1B9CF;
+}
+
+.status-error {
+  color: #D2232A;
+}
+
+/* Profile selection cards */
+.profile-option {
+  border-color: #DED5CB;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.profile-option:hover {
+  border-color: #026DAA;
+}
+
+.profile-option.selected {
+  border-color: #026DAA;
+  box-shadow: 0 0 0 0.2rem rgba(2, 109, 170, 0.25);
+}
+
+/* Login page specifics */
+.login-form .btn-primary {
+  min-width: 120px;
+}
+
+/* Footer */
+.footer {
+  color: #6A6158;
+}
