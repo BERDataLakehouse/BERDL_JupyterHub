@@ -17,7 +17,6 @@ It uses `KubeSpawner` to launch user notebook servers as individual Kubernetes p
 * **Idle Server Culling**: Automatically shuts down user servers after a period of inactivity to conserve resources.
 * **Self-Contained Image**: All code, dependencies, and configurations are bundled into a single Docker image.
 
-
 ## ⚙️ Runtime Configuration
 
 The container is configured at runtime using the following environment variables.
