@@ -30,6 +30,7 @@ def configure_environment(c):
     c.KubeSpawner.environment = {
         # KBase integration
         "KBASE_ORIGIN": os.environ["KBASE_ORIGIN"],
+        "KBASE_AUTH_URL": os.environ["KBASE_AUTH_URL"],
         # Spark configuration
         "SPARK_JOB_LOG_DIR_CATEGORY": "{username}",
         "CDM_TASK_SERVICE_URL": os.environ["CDM_TASK_SERVICE_URL"],
