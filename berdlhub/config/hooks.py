@@ -1,3 +1,4 @@
+import json
 import os
 
 from kubernetes import client
@@ -55,6 +56,14 @@ def _get_profile_environment(spawner) -> dict:
     if selected_profile is None:
         selected_profile = profile_list[0]
         spawner.log.info(f"Using default profile: {selected_profile.get('display_name')}")
+
+    # Set BERDL_PROFILE_JSON for the JupyterLab profile widget
+    profile_info = {
+        "slug": selected_profile.get("slug"),
+        "display_name": selected_profile.get("display_name"),
+        "description": selected_profile.get("description"),
+    }
+    spawner.environment["BERDL_PROFILE_JSON"] = json.dumps(profile_info)
 
     kubespawner_override = selected_profile.get("kubespawner_override", {})
     profile_environment = kubespawner_override.get("environment", {})

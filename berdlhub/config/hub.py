@@ -18,6 +18,9 @@ def configure_hub(c):
         "kbase_origin": os.environ["KBASE_ORIGIN"],
     }
 
+    # Auto-spawn: automatically begin spawning when user visits a stopped server
+    c.JupyterHub.implicit_spawn_seconds = 0.1
+
     # Branding - KBase logo (light version, CSS handles dark mode)
     # Static assets are at berdlhub/static/ (sibling to auth/)
     templates_dir = os.environ["JUPYTERHUB_TEMPLATES_DIR"]
