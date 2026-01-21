@@ -58,12 +58,15 @@ def _get_profile_environment(spawner) -> dict:
         spawner.log.info(f"Using default profile: {selected_profile.get('display_name')}")
 
     # Set BERDL_PROFILE_JSON for the JupyterLab profile widget
+    # Note: Curly braces must be escaped (doubled) because kubespawner treats
+    # environment values as Python format strings and expands {placeholders}
     profile_info = {
         "slug": selected_profile.get("slug"),
         "display_name": selected_profile.get("display_name"),
         "description": selected_profile.get("description"),
     }
-    spawner.environment["BERDL_PROFILE_JSON"] = json.dumps(profile_info)
+    profile_json = json.dumps(profile_info)
+    spawner.environment["BERDL_PROFILE_JSON"] = profile_json.replace("{", "{{").replace("}", "}}")
 
     kubespawner_override = selected_profile.get("kubespawner_override", {})
     profile_environment = kubespawner_override.get("environment", {})
