@@ -55,4 +55,4 @@ def configure_environment(c):
     # https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html
     # IMPORTANT: Use {unescaped_username} because c.KubeSpawner.environment goes through
     # _expand_user_properties(), not template_namespace()
-    c.KubeSpawner.environment.update({"NB_USER": "{unescaped_username}", "CHOWN_HOME": "yes", "GEN_CERT": "yes"})
+    c.KubeSpawner.environment.update({"NB_USER": "{unescaped_username}", "CHOWN_HOME": "yes"})
