@@ -36,6 +36,7 @@ def configure_spawner(c):
     c.KubeSpawner.working_dir = "/home/{unescaped_username}"
     c.KubeSpawner.args = [
         "--ServerApp.default_url=/lab",
+        "--ServerProxy.host_allowlist=minio.minio"
     ]
 
     # Node selection (if specified)
