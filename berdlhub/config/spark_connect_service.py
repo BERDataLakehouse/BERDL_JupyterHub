@@ -110,6 +110,19 @@ def create_user_notebook_service(spawner):
         config.load_incluster_config()
         v1 = client.CoreV1Api()
 
+        # Get the pod UID for owner reference so Kubernetes
+        # automatically cleans up the Service if the pod is deleted
+        pod = v1.read_namespaced_pod(name=spawner.pod_name, namespace=namespace)
+        service.metadata.owner_references = [
+            client.V1OwnerReference(
+                api_version="v1",
+                kind="Pod",
+                name=spawner.pod_name,
+                uid=pod.metadata.uid,
+                block_owner_deletion=True,
+            )
+        ]
+
         # Try to get existing service
         try:
             v1.read_namespaced_service(name=service_name, namespace=namespace)
@@ -201,7 +214,7 @@ def create_spark_ingressroute(spawner):
         "spec": {
             "routes": [
                 {
-                    "match": f"Headers(`X-Username`, `{username}`)",
+                    "match": f"Host(`spark.berdl.kbase.us`) && PathPrefix(`/`) && Headers(`X-Username`, `{username}`)",
                     "kind": "Rule",
                     "services": [
                         {
@@ -217,7 +230,21 @@ def create_spark_ingressroute(spawner):
 
     try:
         config.load_incluster_config()
+        v1 = client.CoreV1Api()
         api = client.CustomObjectsApi()
+
+        # Get the pod UID for owner reference so Kubernetes
+        # automatically cleans up the IngressRoute if the pod is deleted
+        pod = v1.read_namespaced_pod(name=spawner.pod_name, namespace=namespace)
+        manifest["metadata"]["ownerReferences"] = [
+            {
+                "apiVersion": "v1",
+                "kind": "Pod",
+                "name": spawner.pod_name,
+                "uid": pod.metadata.uid,
+                "blockOwnerDeletion": True,
+            }
+        ]
 
         try:
             api.get_namespaced_custom_object(
@@ -248,7 +275,7 @@ def create_spark_ingressroute(spawner):
                 )
                 spawner.log.info(f"✅ Created IngressRoute {ingressroute_name}")
                 spawner.log.info(
-                    f"   - Route: Headers(`X-Username`, `{username}`) -> {service_name}:15002"
+                    f"   - Route: Host(`spark.berdl.kbase.us`) && Headers(`X-Username`, `{username}`) -> {service_name}:15002"
                 )
             else:
                 raise
