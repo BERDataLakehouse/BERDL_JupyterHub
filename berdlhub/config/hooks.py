@@ -7,7 +7,7 @@ from berdlhub.api_utils.spark_utils import SparkClusterManager
 from berdlhub.config.spark_connect_service import (
     create_user_notebook_service,
     delete_user_notebook_service,
-    ensure_pod_labels_for_service,
+    ensure_pod_labels_for_service, create_spark_ingressroute, delete_spark_ingressroute,
 )
 
 
@@ -96,6 +96,8 @@ async def pre_spawn_hook(spawner):
     # Spark Connect server via DNS: sc://jupyter-{username}.{namespace}:15002
     spawner.log.info("Creating Kubernetes Service for Spark Connect access")
     create_user_notebook_service(spawner)
+    create_spark_ingressroute(spawner)
+
 
 
 async def post_stop_hook(spawner):
@@ -115,6 +117,7 @@ async def post_stop_hook(spawner):
     # Delete Kubernetes Service
     spawner.log.info("Deleting Kubernetes Service for Spark Connect")
     delete_user_notebook_service(spawner)
+    delete_spark_ingressroute(spawner)
 
 
 def modify_pod_hook(spawner, pod):
