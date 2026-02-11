@@ -160,6 +160,138 @@ def delete_user_notebook_service(spawner):
         spawner.log.error(f"Unexpected error deleting Service: {e}")
 
 
+def create_spark_ingressroute(spawner):
+    """
+    Create a Traefik IngressRoute for the user's Spark Connect server.
+
+    Routes gRPC traffic to the user's notebook Service based on the
+    X-Username header. The IngressRoute matches:
+
+        Headers(`X-Username`, `{username}`)
+
+    and forwards to:
+
+        jupyter-{sanitized_username}.{namespace}:15002 via h2c (gRPC)
+
+    Args:
+        spawner: KubeSpawner instance
+
+    Returns:
+        None (creates IngressRoute via Kubernetes API)
+    """
+    username = spawner.user.name
+    namespace = spawner.namespace
+    sanitized_username = sanitize_k8s_name(username)
+    service_name = f"jupyter-{sanitized_username}"
+    ingressroute_name = f"spark-{sanitized_username}"
+
+    manifest = {
+        "apiVersion": "traefik.io/v1alpha1",
+        "kind": "IngressRoute",
+        "metadata": {
+            "name": ingressroute_name,
+            "namespace": namespace,
+            "labels": {
+                "app": "berdl-notebook",
+                "component": "spark-connect-route",
+                "hub.jupyter.org/username": username,
+                "app.kubernetes.io/managed-by": "jupyterhub",
+            },
+        },
+        "spec": {
+            "routes": [
+                {
+                    "match": f"Headers(`X-Username`, `{username}`)",
+                    "kind": "Rule",
+                    "services": [
+                        {
+                            "name": service_name,
+                            "port": 15002,
+                            "scheme": "h2c",
+                        }
+                    ],
+                }
+            ],
+        },
+    }
+
+    try:
+        config.load_incluster_config()
+        api = client.CustomObjectsApi()
+
+        try:
+            api.get_namespaced_custom_object(
+                group="traefik.io",
+                version="v1alpha1",
+                namespace=namespace,
+                plural="ingressroutes",
+                name=ingressroute_name,
+            )
+            # Already exists, patch it
+            api.patch_namespaced_custom_object(
+                group="traefik.io",
+                version="v1alpha1",
+                namespace=namespace,
+                plural="ingressroutes",
+                name=ingressroute_name,
+                body=manifest,
+            )
+            spawner.log.info(f"✅ Updated IngressRoute {ingressroute_name}")
+        except client.exceptions.ApiException as e:
+            if e.status == 404:
+                api.create_namespaced_custom_object(
+                    group="traefik.io",
+                    version="v1alpha1",
+                    namespace=namespace,
+                    plural="ingressroutes",
+                    body=manifest,
+                )
+                spawner.log.info(f"✅ Created IngressRoute {ingressroute_name}")
+                spawner.log.info(
+                    f"   - Route: Headers(`X-Username`, `{username}`) -> {service_name}:15002"
+                )
+            else:
+                raise
+    except Exception as e:
+        spawner.log.error(f"❌ Failed to create/update IngressRoute {ingressroute_name}: {e}")
+        # Don't fail pod creation if IngressRoute creation fails
+
+
+def delete_spark_ingressroute(spawner):
+    """
+    Delete the Traefik IngressRoute for the user's Spark Connect server.
+
+    Args:
+        spawner: KubeSpawner instance
+
+    Returns:
+        None (deletes IngressRoute via Kubernetes API)
+    """
+    username = spawner.user.name
+    sanitized_username = sanitize_k8s_name(username)
+    ingressroute_name = f"spark-{sanitized_username}"
+
+    try:
+        config.load_incluster_config()
+        api = client.CustomObjectsApi()
+
+        api.delete_namespaced_custom_object(
+            group="traefik.io",
+            version="v1alpha1",
+            namespace=spawner.namespace,
+            plural="ingressroutes",
+            name=ingressroute_name,
+        )
+        spawner.log.info(f"🗑️  Deleted IngressRoute {ingressroute_name}")
+    except client.exceptions.ApiException as e:
+        if e.status == 404:
+            spawner.log.info(f"IngressRoute {ingressroute_name} already deleted")
+        else:
+            spawner.log.error(f"Failed to delete IngressRoute {ingressroute_name}: {e}")
+    except Exception as e:
+        spawner.log.error(f"Unexpected error deleting IngressRoute: {e}")
+
+
 def ensure_pod_labels_for_service(spawner, pod):
     """
     Ensure the pod has the required labels for Service selection.
