@@ -85,9 +85,12 @@
         });
 
         const environmentOrigin = "{{ kbase_origin }}"
+        const urlParams = new URLSearchParams(window.location.search);
+        const autoLogin = urlParams.get('autologin') === 'true';
 
         $('#login_not_ok').click(function () {
-            window.location.href = environmentOrigin + '/login?nextRequest=%22/cdm/redirect%22';
+            const returnUrl = window.location.origin + '/hub/login?autologin=true';
+            window.location.href = environmentOrigin + '/login?nextRequest=' + encodeURIComponent(returnUrl);
         })
 
         // Initial state update
@@ -114,6 +117,9 @@
                     $('#login_submit').attr('value', buttonText);
                     $('#login_submit').toggleClass('hidden', false);
                     $('#login_not_ok').toggleClass('hidden', true);
+                    if (autoLogin) {
+                        $('form').submit();
+                    }
                 } else {
                     $('#login_submit').toggleClass('hidden', true);
                     $('#login_not_ok').toggleClass('hidden', false);
