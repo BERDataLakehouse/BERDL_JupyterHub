@@ -193,7 +193,5 @@ class MfaRequiredHandler(BaseHandler):
         """
         mfa_status = self.get_argument("mfa_status", "Unknown")
 
-        html = await self.render_template(
-            "mfa-required.html", mfa_status=mfa_status, kbase_origin=kbase_origin()
-        )
+        html = await self.render_template("mfa-required.html", mfa_status=mfa_status, kbase_origin=kbase_origin())
         self.finish(html)
