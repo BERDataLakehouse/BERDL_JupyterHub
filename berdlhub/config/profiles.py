@@ -15,6 +15,7 @@ def configure_profiles(c):
             ),
             "description": "Balanced Spark cluster for medium data processing workloads",
             "slug": "medium",
+            "default": True,
             "kubespawner_override": {
                 "mem_limit": "16G",
                 "mem_guarantee": "8G",
@@ -29,7 +30,6 @@ def configure_profiles(c):
             ),
             "description": "High-performance Spark cluster for large datasets and heavy computation",
             "slug": "large",
-            "default": True,
             "kubespawner_override": {
                 "mem_limit": "72G",
                 "mem_guarantee": "36G",
