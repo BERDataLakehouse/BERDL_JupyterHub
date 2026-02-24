@@ -5,7 +5,7 @@ description = "BER Data Lake JupyterHub Environment"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "aiohttp==3.12.13",
+    "aiohttp==3.13.3",
     "cdm-spark-manager-client",
     "fasteners==0.20",
     "httpx==0.28.1",
