@@ -204,14 +204,15 @@ def configure_hooks(c):
     c.KubeSpawner.post_stop_hook = post_stop_hook
     c.KubeSpawner.modify_pod_hook = modify_pod_hook
 
-    # Use the NB_USER environment variable that's already set
+    # Clean unmount of s3fs FUSE mounts before pod termination to flush writes.
+    # global-share must be unmounted before home (nested mount).
     c.KubeSpawner.lifecycle_hooks = {
-        "postStart": {
+        "preStop": {
             "exec": {
                 "command": [
                     "/bin/sh",
                     "-c",
-                    "ln -sfn /global_share /home/$NB_USER/global_share || true",
+                    "fusermount -u /home/$NB_USER/global-share 2>/dev/null; fusermount -u /home/$NB_USER 2>/dev/null; true",
                 ]
             }
         }

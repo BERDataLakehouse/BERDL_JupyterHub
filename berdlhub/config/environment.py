@@ -56,4 +56,7 @@ def configure_environment(c):
     # https://jupyter-docker-stacks.readthedocs.io/en/latest/using/common.html
     # IMPORTANT: Use {unescaped_username} because c.KubeSpawner.environment goes through
     # _expand_user_properties(), not template_namespace()
-    c.KubeSpawner.environment.update({"NB_USER": "{unescaped_username}", "CHOWN_HOME": "yes", "GEN_CERT": "yes"})
+    # CHOWN_HOME must be "no" — home directories are s3fs FUSE mounts;
+    # chown on FUSE triggers slow HEAD requests for every S3 object.
+    # s3fs uid/gid mount options handle ownership instead.
+    c.KubeSpawner.environment.update({"NB_USER": "{unescaped_username}", "CHOWN_HOME": "no", "GEN_CERT": "yes"})

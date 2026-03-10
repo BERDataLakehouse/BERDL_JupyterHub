@@ -1,36 +1,30 @@
-"""Storage configuration for user pods."""
+"""Storage configuration for user pods.
+
+Home directories are S3 FUSE-mounted via s3fs inside the container (entrypoint.sh).
+/dev/fuse is required for s3fs to create FUSE mounts.
+"""
 
 import logging
-import os
 
 logger = logging.getLogger(__name__)
 
 
-def configure_hostpath_storage(c):
-    """Configure hostPath volumes (current implementation)."""
-    logger.warning("Using hostPath storage - this limits scalability to a single node!")
-
-    # Get configurable base path for storage
-    storage_base_path = os.environ["BERDL_NOTEBOOK_HOMES_DIR"]
+def configure_storage(c):
+    """Configure S3 FUSE-backed home storage."""
 
     c.KubeSpawner.volumes = [
-        {
-            "name": "user-home",
-            "hostPath": {
-                "path": f"{storage_base_path}/{{unescaped_username}}",
-                "type": "DirectoryOrCreate",
-            },
-        },
-        {
-            "name": "user-global",
-            "hostPath": {
-                "path": f"{storage_base_path}/global_share",
-                "type": "DirectoryOrCreate",
-            },
-        },
+        # /dev/fuse device needed for s3fs FUSE mounts
+        {"name": "dev-fuse", "hostPath": {"path": "/dev/fuse"}},
     ]
 
     c.KubeSpawner.volume_mounts = [
-        {"name": "user-home", "mountPath": "/home/{unescaped_username}"},
-        {"name": "user-global", "mountPath": "/global_share"},
+        {"name": "dev-fuse", "mountPath": "/dev/fuse"},
     ]
+
+    # SYS_ADMIN capability required for s3fs FUSE mounts inside the container.
+    # This is the minimum privilege needed — avoids full privileged mode.
+    c.KubeSpawner.extra_container_config = {
+        "securityContext": {
+            "capabilities": {"add": ["SYS_ADMIN"]},
+        }
+    }
