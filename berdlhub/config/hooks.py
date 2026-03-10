@@ -212,7 +212,8 @@ def configure_hooks(c):
                 "command": [
                     "/bin/sh",
                     "-c",
-                    "fusermount -u /home/$NB_USER/global-share 2>/dev/null; fusermount -u /home/$NB_USER 2>/dev/null; true",
+                    "fusermount -u /home/$NB_USER/global-share 2>/dev/null;"
+                    " fusermount -u /home/$NB_USER 2>/dev/null; true",
                 ]
             }
         }
