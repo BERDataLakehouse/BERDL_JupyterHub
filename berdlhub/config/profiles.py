@@ -10,31 +10,25 @@ def configure_profiles(c):
 
     c.KubeSpawner.profile_list = [
         {
-            "display_name": (
-                "Medium: Spark 4 Workers (8GB, 1 core each) + Master (8GB, 1 core) - Notebook (16GB, 2 cores)"
-            ),
+            "display_name": ("Medium"),
             "description": "Balanced Spark cluster for medium data processing workloads",
             "slug": "medium",
             "default": True,
             "kubespawner_override": {
-                "mem_limit": "16G",
-                "mem_guarantee": "8G",
-                "cpu_limit": 2,
+                "mem_limit": "24G",
+                "mem_guarantee": "6G",
                 "cpu_guarantee": 1,
                 "image": berdl_image,
             },
         },
         {
-            "display_name": (
-                "Large: Spark 4 Workers (32GB, 1 core each) + Master (16GB, 1 core) - Notebook (72GB, 4 cores)"
-            ),
+            "display_name": ("Large"),
             "description": "High-performance Spark cluster for large datasets and heavy computation",
             "slug": "large",
             "kubespawner_override": {
-                "mem_limit": "72G",
-                "mem_guarantee": "36G",
-                "cpu_limit": 4,
-                "cpu_guarantee": 2,
+                "mem_limit": "24G",
+                "mem_guarantee": "6G",
+                "cpu_guarantee": 1,
                 "image": berdl_image,
             },
         },
