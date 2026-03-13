@@ -10,9 +10,7 @@ def configure_profiles(c):
 
     c.KubeSpawner.profile_list = [
         {
-            "display_name": (
-                "Medium"
-            ),
+            "display_name": ("Medium"),
             "description": "Balanced Spark cluster for medium data processing workloads",
             "slug": "medium",
             "default": True,
@@ -24,9 +22,7 @@ def configure_profiles(c):
             },
         },
         {
-            "display_name": (
-                "Large"
-            ),
+            "display_name": ("Large"),
             "description": "High-performance Spark cluster for large datasets and heavy computation",
             "slug": "large",
             "kubespawner_override": {
