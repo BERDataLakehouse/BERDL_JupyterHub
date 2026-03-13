@@ -26,21 +26,25 @@ class ClusterDefaults:
     master_cores: int = 1
     master_memory: str = "2GiB"
 
-    # Profile configurations
+    # Profile configurations — sized for 10 Spark nodes (168c, 1024G each = 1,680c, 10,240G total)
+    # Medium: 5×(3c,20G) + master(1c,2G) = 16 cores, 102 GiB/user
+    #   100 users → 10,200 GiB (99.6%) RAM, 1,600 cores (95.2%) CPU
+    # Large: 10×(6c,40G) + master(2c,8G) = 62 cores, 408 GiB/user (4× Medium)
+    #   Not all users run Large simultaneously; designed for power-user workloads
     PROFILES = {
         "medium": {
-            "worker_count": 4,
-            "worker_cores": 1,
-            "worker_memory": "8GiB",
+            "worker_count": 5,
+            "worker_cores": 3,
+            "worker_memory": "20GiB",
             "master_cores": 1,
-            "master_memory": "8GiB",
+            "master_memory": "2GiB",
         },
         "large": {
-            "worker_count": 4,
-            "worker_cores": 1,
-            "worker_memory": "32GiB",
-            "master_cores": 1,
-            "master_memory": "16GiB",
+            "worker_count": 10,
+            "worker_cores": 6,
+            "worker_memory": "40GiB",
+            "master_cores": 2,
+            "master_memory": "8GiB",
         },
     }
 
