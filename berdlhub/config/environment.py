@@ -43,6 +43,7 @@ def configure_environment(c):
         "MINIO_ENDPOINT_URL": os.environ["MINIO_ENDPOINT_URL"],
         "MINIO_SECURE": os.environ.get("MINIO_SECURE_FLAG", "True"),
         "DATALAKE_MCP_SERVER_URL": os.environ["DATALAKE_MCP_SERVER_URL"],
+        "POLARIS_CATALOG_URI": os.environ["POLARIS_CATALOG_URI"],
         "BERDL_REDIS_HOST": os.environ["BERDL_REDIS_HOST"],
         "BERDL_REDIS_PORT": os.environ["BERDL_REDIS_PORT"],
         # Spark Connect URL (uses callable to generate from sanitized username)
